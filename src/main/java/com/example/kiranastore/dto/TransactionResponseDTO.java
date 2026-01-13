@@ -1,22 +1,14 @@
 package com.example.kiranastore.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.util.UUID;
 
+@Getter
+@AllArgsConstructor
 public class TransactionResponseDTO {
 
     private UUID transactionId;
     private String status;
-
-    public TransactionResponseDTO(UUID transactionId, String status) {
-        this.transactionId = transactionId;
-        this.status = status;
-    }
-
-    public UUID getTransactionId() {
-        return transactionId;
-    }
-
-    public String getStatus() {
-        return status;
-    }
 }

@@ -13,6 +13,14 @@ import java.util.UUID;
 @RequestMapping("/transactions")
 public class TransactionController {
 
+
+    /*
+- Transaction API entry
+- Handle create request
+- Delegate to service
+- Return response
+*/
+
     private final TransactionService transactionService;
 
     public TransactionController(TransactionService transactionService) {
@@ -39,8 +47,6 @@ public class TransactionController {
         return ResponseEntity.ok(transaction);
     }
 }
-
-
 
 // TODO shouldn't take entity as request
 // TODO should send desired response not entity

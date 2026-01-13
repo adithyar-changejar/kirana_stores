@@ -25,11 +25,11 @@ public class TransactionEntity {
 
     private String currency;
 
-    private String status;
+    private String status; // Enums
 
     @Enumerated(EnumType.STRING)
     private TransactionType type;
 
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt; // Use Date
     private LocalDateTime updatedAt;
 }

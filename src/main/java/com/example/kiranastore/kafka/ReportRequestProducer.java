@@ -7,6 +7,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class ReportRequestProducer {
 
+    /*
+- Kafka producer
+- Publish report events
+- Send async messages
+- Trigger consumers
+*/
+
+
     private static final String TOPIC = "report_requests";
 
     private final KafkaTemplate<String, Object> kafkaTemplate;

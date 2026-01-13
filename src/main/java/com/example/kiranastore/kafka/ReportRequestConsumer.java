@@ -8,6 +8,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class ReportRequestConsumer {
 
+    /*
+- Kafka consumer
+- Receive report events
+- Trigger report generation
+- Async processing
+*/
+
+
     private final TransactionReportService transactionReportService;
 
     public ReportRequestConsumer(TransactionReportService transactionReportService) {

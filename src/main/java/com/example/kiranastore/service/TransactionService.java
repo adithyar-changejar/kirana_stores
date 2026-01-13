@@ -26,6 +26,8 @@ public class TransactionService {
 
     public TransactionResponseDTO createTransaction(TransactionRequestDTO request) {
 
+        // Break dependecy and create smaller functions
+
         // ===== VALIDATION =====
         if (request.getUserId() == null || request.getUserId().trim().isEmpty()) {
             throw new IllegalArgumentException("UserId cannot be null or empty");

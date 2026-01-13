@@ -9,6 +9,13 @@ import java.util.UUID;
 
 public interface TransactionDao {
 
+    /*
+- Transaction DAO
+- Persistence contract
+- Abstract DB access
+- Used by service
+*/
+
     TransactionEntity save(TransactionEntity entity);
 
     Optional<TransactionEntity> findById(UUID id);

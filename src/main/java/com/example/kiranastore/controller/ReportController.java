@@ -11,6 +11,13 @@ import java.util.Map;
 @RequestMapping("/reports")
 public class ReportController {
 
+
+    /*
+- Report API entry
+- Accept report request
+- Trigger async flow
+- Return request id
+*/
     private final ReportService reportService;
 
     public ReportController(ReportService reportService) {

@@ -17,11 +17,11 @@ public class ReportDocument {
 
     private String userId;
 
-    private LocalDateTime fromTime;
-    private LocalDateTime toTime;
+    private LocalDateTime fromTime; //Date
+    private LocalDateTime toTime; //Date
 
     private double totalAmount;
     private int totalTransactions;
 
-    private LocalDateTime generatedAt;
+    private LocalDateTime generatedAt; //Date
 }

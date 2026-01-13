@@ -11,8 +11,6 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
-
-
 @Configuration
 public class KafkaProducerConfig {
 
@@ -33,7 +31,6 @@ public class KafkaProducerConfig {
                 jsonSerializer
         );
     }
-
 
     @Bean
     public KafkaTemplate<String, Object> kafkaTemplate() {

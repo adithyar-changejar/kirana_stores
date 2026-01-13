@@ -12,6 +12,12 @@ import java.util.UUID;
 @Repository
 public class TransactionDaoImpl implements TransactionDao {
 
+    /*
+- DAO implementation
+- Wrap repository
+- Execute DB calls
+- Isolate persistence
+*/
     private final TransactionRepository transactionRepository;
 
     public TransactionDaoImpl(TransactionRepository transactionRepository) {
