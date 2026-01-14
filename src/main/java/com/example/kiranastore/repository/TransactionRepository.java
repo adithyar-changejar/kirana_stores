@@ -4,7 +4,7 @@ import com.example.kiranastore.entity.TransactionEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,16 +15,15 @@ public interface TransactionRepository
     List<TransactionEntity> findByUserId(String userId);
 
     List<TransactionEntity> findByCreatedAtBetween(
-            LocalDateTime from,
-            LocalDateTime to
+            Date from,
+            Date to
     );
 
     List<TransactionEntity> findByUserIdAndCreatedAtBetween(
             String userId,
-            LocalDateTime from,
-            LocalDateTime to
+            Date from,
+            Date to
     );
 
-    //TODO read about indexes
-
+    // TODO read about indexes
 }

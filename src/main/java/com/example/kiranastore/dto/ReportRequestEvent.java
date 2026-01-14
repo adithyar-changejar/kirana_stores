@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class ReportRequestEvent {
 
     private String userId;
-    private LocalDateTime fromTime;
-    private LocalDateTime toTime;
+    private Date fromTime;
+    private Date toTime;
     private String requestId;
 }

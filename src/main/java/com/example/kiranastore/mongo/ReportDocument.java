@@ -1,11 +1,12 @@
 package com.example.kiranastore.mongo;
 
+import com.example.kiranastore.entity.ReportStatus;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -13,15 +14,20 @@ import java.time.LocalDateTime;
 public class ReportDocument {
 
     @Id
-    private String reportId;   // same as requestId
+    private String reportId;
 
     private String userId;
 
-    private LocalDateTime fromTime; //Date
-    private LocalDateTime toTime; //Date
+    private Date fromTime;
+    private Date toTime;
 
-    private double totalAmount;
+    private double totalCredits;
+    private double totalDebits;
+    private double netAmount;
+
     private int totalTransactions;
 
-    private LocalDateTime generatedAt; //Date
+    private ReportStatus status;
+
+    private Date generatedAt;
 }

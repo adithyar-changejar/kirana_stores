@@ -1,23 +1,23 @@
 package com.example.kiranastore.controller;
 
 import com.example.kiranastore.dto.ReportRequestDTO;
+import com.example.kiranastore.dto.ReportResponseDTO;
+import com.example.kiranastore.entity.ReportStatus;
 import com.example.kiranastore.service.ReportService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/reports")
 public class ReportController {
 
-
     /*
-- Report API entry
-- Accept report request
-- Trigger async flow
-- Return request id
-*/
+    - Report API entry
+    - Accept report request
+    - Trigger async flow
+    - Return request id
+    */
+
     private final ReportService reportService;
 
     public ReportController(ReportService reportService) {
@@ -25,7 +25,7 @@ public class ReportController {
     }
 
     @PostMapping
-    public ResponseEntity<?> requestReport(
+    public ResponseEntity<ReportResponseDTO> requestReport(
             @RequestBody ReportRequestDTO request
     ) {
 
@@ -34,13 +34,12 @@ public class ReportController {
                 request.getFromTime(),
                 request.getToTime()
         );
-        //TODO get response from service itself
 
         return ResponseEntity.ok(
-                Map.of(
-                        "requestId", requestId,
-                        "status", "REQUEST_ACCEPTED"
-                )
+                new ReportResponseDTO(requestId, ReportStatus.REQUESTED)
         );
     }
 }
+
+
+

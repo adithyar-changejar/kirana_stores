@@ -4,7 +4,7 @@ import com.example.kiranastore.entity.TransactionEntity;
 import com.example.kiranastore.repository.TransactionRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -13,11 +13,12 @@ import java.util.UUID;
 public class TransactionDaoImpl implements TransactionDao {
 
     /*
-- DAO implementation
-- Wrap repository
-- Execute DB calls
-- Isolate persistence
-*/
+    - DAO implementation
+    - Wrap repository
+    - Execute DB calls
+    - Isolate persistence
+    */
+
     private final TransactionRepository transactionRepository;
 
     public TransactionDaoImpl(TransactionRepository transactionRepository) {
@@ -37,8 +38,8 @@ public class TransactionDaoImpl implements TransactionDao {
     @Override
     public List<TransactionEntity> findByUserIdAndCreatedAtBetween(
             String userId,
-            LocalDateTime from,
-            LocalDateTime to
+            Date from,
+            Date to
     ) {
         return transactionRepository
                 .findByUserIdAndCreatedAtBetween(userId, from, to);

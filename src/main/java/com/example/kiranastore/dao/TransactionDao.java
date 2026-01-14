@@ -2,7 +2,7 @@ package com.example.kiranastore.dao;
 
 import com.example.kiranastore.entity.TransactionEntity;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -10,11 +10,11 @@ import java.util.UUID;
 public interface TransactionDao {
 
     /*
-- Transaction DAO
-- Persistence contract
-- Abstract DB access
-- Used by service
-*/
+    - Transaction DAO
+    - Persistence contract
+    - Abstract DB access
+    - Used by service
+    */
 
     TransactionEntity save(TransactionEntity entity);
 
@@ -22,7 +22,7 @@ public interface TransactionDao {
 
     List<TransactionEntity> findByUserIdAndCreatedAtBetween(
             String userId,
-            LocalDateTime from,
-            LocalDateTime to
+            Date from,
+            Date to
     );
 }

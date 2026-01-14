@@ -1,9 +1,10 @@
 package com.example.kiranastore.controller;
 
+import com.example.kiranastore.dto.TransactionDetailsResponseDTO;
 import com.example.kiranastore.dto.TransactionRequestDTO;
 import com.example.kiranastore.dto.TransactionResponseDTO;
-import com.example.kiranastore.entity.TransactionEntity;
 import com.example.kiranastore.service.TransactionService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,14 +14,6 @@ import java.util.UUID;
 @RequestMapping("/transactions")
 public class TransactionController {
 
-
-    /*
-- Transaction API entry
-- Handle create request
-- Delegate to service
-- Return response
-*/
-
     private final TransactionService transactionService;
 
     public TransactionController(TransactionService transactionService) {
@@ -29,24 +22,19 @@ public class TransactionController {
 
     @PostMapping
     public ResponseEntity<TransactionResponseDTO> createTransaction(
-            @RequestBody TransactionRequestDTO request) {
+            @Valid @RequestBody TransactionRequestDTO request) {
 
-        TransactionResponseDTO response =
-                transactionService.createTransaction(request);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+                transactionService.createTransaction(request)
+        );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TransactionEntity> getTransaction(
+    public ResponseEntity<TransactionDetailsResponseDTO> getTransaction(
             @PathVariable UUID id) {
 
-        TransactionEntity transaction =
-                transactionService.getTransaction(id);
-
-        return ResponseEntity.ok(transaction);
+        return ResponseEntity.ok(
+                transactionService.getTransaction(id)
+        );
     }
 }
-
-// TODO shouldn't take entity as request
-// TODO should send desired response not entity

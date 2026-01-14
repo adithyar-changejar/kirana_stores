@@ -1,58 +1,86 @@
 package com.example.kiranastore.service;
 
 import com.example.kiranastore.dao.TransactionDao;
-import com.example.kiranastore.entity.TransactionEntity;
 import com.example.kiranastore.mongo.ReportDocument;
-import com.example.kiranastore.repository.ReportRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.time.ZoneId;
+import java.util.Date;
 
 @Service
 public class TransactionReportService {
 
     private final TransactionDao transactionDao;
-    private final ReportRepository reportRepository;
+    private final ReportLifecycleService lifecycleService;
+    private final TransactionAggregationService aggregationService;
 
     public TransactionReportService(
             TransactionDao transactionDao,
-            ReportRepository reportRepository
+            ReportLifecycleService lifecycleService,
+            TransactionAggregationService aggregationService
     ) {
         this.transactionDao = transactionDao;
-        this.reportRepository = reportRepository;
+        this.lifecycleService = lifecycleService;
+        this.aggregationService = aggregationService;
     }
 
     public void generateTransactionReport(
             String userId,
-            LocalDateTime from,
-            LocalDateTime to,
+            Date from,
+            Date to,
             String requestId
     ) {
 
-        List<TransactionEntity> transactions =
-                transactionDao.findByUserIdAndCreatedAtBetween(
-                        userId, from, to
-                );
+        ReportDocument report = lifecycleService.markInProgress(requestId);
 
-        double totalAmount = transactions.stream()
-                .mapToDouble(t -> t.getAmount().doubleValue())
-                .sum();
+        try {
+            Date normalizedFrom = normalizeStart(from);
+            Date normalizedTo = normalizeEnd(to);
 
-        ReportDocument report = new ReportDocument();
-        report.setReportId(requestId);
-        report.setUserId(userId);
-        report.setFromTime(from);
-        report.setToTime(to);
-        report.setTotalAmount(totalAmount);
-        report.setTotalTransactions(transactions.size());
-        report.setGeneratedAt(LocalDateTime.now());
+            var transactions =
+                    transactionDao.findByUserIdAndCreatedAtBetween(
+                            userId,
+                            normalizedFrom,
+                            normalizedTo
+                    );
 
-        //TODO Dao for this
-        reportRepository.save(report);
+            var result = aggregationService.aggregate(transactions);
 
-        System.out.println(
-                " Report generated and stored with requestId = " + requestId
+            report.setFromTime(normalizedFrom);
+            report.setToTime(normalizedTo);
+
+            lifecycleService.markCompleted(
+                    report,
+                    result.totalCredits(),
+                    result.totalDebits(),
+                    result.netAmount(),
+                    result.totalTransactions()
+            );
+
+        } catch (Exception e) {
+            lifecycleService.markFailed(report);
+            throw e;
+        }
+    }
+
+    private Date normalizeStart(Date date) {
+        return Date.from(
+                date.toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate()
+                        .atStartOfDay(ZoneId.systemDefault())
+                        .toInstant()
+        );
+    }
+
+    private Date normalizeEnd(Date date) {
+        return Date.from(
+                date.toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate()
+                        .atTime(23, 59, 59)
+                        .atZone(ZoneId.systemDefault())
+                        .toInstant()
         );
     }
 }

@@ -1,7 +1,7 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '4.0.1'
-    id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.springframework.boot' version '3.2.5'
+    id 'io.spring.dependency-management' version '1.1.5'
 }
 
 group = 'com.example'
@@ -10,13 +10,7 @@ description = 'KIRANASTORE'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
-    }
-}
-
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
@@ -26,32 +20,31 @@ repositories {
 
 dependencies {
 
+    // Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-
-
+    // Actuator
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
+    // Kafka
+    implementation 'org.springframework.kafka:spring-kafka'
 
+    // MongoDB (ONLY ONE)
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
+    // JPA + PostgreSQL
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'org.postgresql:postgresql'
+
+    // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    implementation 'org.springframework.kafka:spring-kafka'
-
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-
-
-
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    runtimeOnly 'org.postgresql:postgresql'
-    // testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
-
+    // Tests
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-    implementation 'com.fasterxml.jackson.core:jackson-core'
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 }
 
 tasks.named('test') {

@@ -1,5 +1,6 @@
 package com.example.kiranastore.dto;
 
+import com.example.kiranastore.entity.TransactionStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,5 +11,5 @@ import java.util.UUID;
 public class TransactionResponseDTO {
 
     private UUID transactionId;
-    private String status;
+    private TransactionStatus status;
 }

@@ -1,82 +1,93 @@
 package com.example.kiranastore.service;
 
 import com.example.kiranastore.dao.TransactionDao;
+import com.example.kiranastore.dao.UserDao;
+import com.example.kiranastore.dto.TransactionDetailsResponseDTO;
 import com.example.kiranastore.dto.TransactionRequestDTO;
 import com.example.kiranastore.dto.TransactionResponseDTO;
+import com.example.kiranastore.entity.CurrencyType;
 import com.example.kiranastore.entity.TransactionEntity;
+import com.example.kiranastore.mongo.UserDocument;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
 public class TransactionService {
 
     private final TransactionDao transactionDao;
+    private final UserDao userDao;
+    private final AccountService accountService;
+    private final TransactionMapper transactionMapper;
     private final CurrencyConversionService currencyConversionService;
 
     public TransactionService(
             TransactionDao transactionDao,
+            UserDao userDao,
+            AccountService accountService,
+            TransactionMapper transactionMapper,
             CurrencyConversionService currencyConversionService
     ) {
         this.transactionDao = transactionDao;
+        this.userDao = userDao;
+        this.accountService = accountService;
+        this.transactionMapper = transactionMapper;
         this.currencyConversionService = currencyConversionService;
     }
 
     public TransactionResponseDTO createTransaction(TransactionRequestDTO request) {
 
-        // Break dependecy and create smaller functions
-
-        // ===== VALIDATION =====
-        if (request.getUserId() == null || request.getUserId().trim().isEmpty()) {
-            throw new IllegalArgumentException("UserId cannot be null or empty");
-        }
-
-        if (request.getAmount() == null) {
-            throw new IllegalArgumentException("Amount cannot be null");
-        }
-
-        if (request.getCurrency() == null) {
-            throw new IllegalArgumentException("Currency is required");
-        }
-
-        if (request.getType() == null) {
-            throw new IllegalArgumentException("Transaction type is required");
-        }
+        UserDocument user = userDao.findById(request.getUserId())
+                .orElseThrow(() ->
+                        new IllegalArgumentException("User does not exist"));
 
         BigDecimal amount = request.getAmount();
-        String currency = request.getCurrency();
+        CurrencyType currency = request.getCurrency();
 
-        // ===== CURRENCY CONVERSION =====
-        if ("USD".equalsIgnoreCase(currency)) {
-            BigDecimal rate = currencyConversionService.getUsdToInrRate();
-            amount = amount.multiply(rate);
-            currency = "INR";
+        if (currency == CurrencyType.USD) {
+            amount = amount.multiply(
+                    currencyConversionService.getUsdToInrRate()
+            );
+            currency = CurrencyType.INR;
         }
 
-        // ===== DTO → ENTITY =====
-        TransactionEntity entity = new TransactionEntity();
-        entity.setUserId(request.getUserId());
-        entity.setAmount(amount);
-        entity.setCurrency(currency);
-        entity.setType(request.getType());
-        entity.setStatus("SUCCESS");
-        entity.setCreatedAt(LocalDateTime.now());
-        entity.setUpdatedAt(LocalDateTime.now());
+        var account =
+                accountService.getOrCreateAccount(user.getUserId());
 
-        TransactionEntity saved = transactionDao.save(entity);
+        accountService.applyTransaction(
+                account,
+                amount,
+                request.getType()
+        );
 
-        // ===== ENTITY → RESPONSE DTO =====
+        TransactionEntity transaction =
+                transactionMapper.toEntity(request, amount, currency);
+
+        TransactionEntity saved =
+                transactionDao.save(transaction);
+
         return new TransactionResponseDTO(
                 saved.getTransactionId(),
                 saved.getStatus()
         );
     }
 
-    public TransactionEntity getTransaction(UUID id) {
-        return transactionDao.findById(id)
+    public TransactionDetailsResponseDTO getTransaction(UUID id) {
+
+        TransactionEntity entity = transactionDao.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException("Transaction not found"));
+
+        return new TransactionDetailsResponseDTO(
+                entity.getTransactionId(),
+                entity.getUserId(),
+                entity.getAmount(),
+                entity.getCurrency(),
+                entity.getType(),
+                entity.getStatus(),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt()
+        );
     }
 }
