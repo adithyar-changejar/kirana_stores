@@ -1,5 +1,6 @@
 package com.example.kiranastore.mongo;
 
+import com.example.kiranastore.entity.UserRole;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -13,9 +14,13 @@ import java.util.Date;
 public class UserDocument {
 
     @Id
-    private String userId;   // MUST match Mongo _id (String)
+    private String userId;
 
     private String name;
+
+    private String password;   // BCrypt hash
+
+    private UserRole role;
 
     private Date createdAt;
 }

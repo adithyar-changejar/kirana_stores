@@ -5,32 +5,26 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 🔹 Validation errors (@Valid)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationException(
-            MethodArgumentNotValidException ex) {
-
-        String message = ex.getBindingResult()
-                .getFieldErrors()
-                .get(0)
-                .getDefaultMessage();
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(
+            AccessDeniedException ex) {
 
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(HttpStatus.FORBIDDEN)
                 .body(new ErrorResponse(
-                        message,
-                        HttpStatus.BAD_REQUEST,
+                        "Access denied",
+                        HttpStatus.FORBIDDEN,
                         LocalDateTime.now()
                 ));
     }
 
-    // 🔹 Business validation errors
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgument(
             IllegalArgumentException ex) {
@@ -44,30 +38,15 @@ public class GlobalExceptionHandler {
                 ));
     }
 
-    // 🔹 Resource not found
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> handleRuntime(
-            RuntimeException ex) {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidation(
+            MethodArgumentNotValidException ex) {
 
         return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
+                .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(
-                        ex.getMessage(),
-                        HttpStatus.NOT_FOUND,
-                        LocalDateTime.now()
-                ));
-    }
-
-    // 🔹 Fallback safety net
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGeneric(
-            Exception ex) {
-
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(
-                        "Internal server error",
-                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Validation failed",
+                        HttpStatus.BAD_REQUEST,
                         LocalDateTime.now()
                 ));
     }

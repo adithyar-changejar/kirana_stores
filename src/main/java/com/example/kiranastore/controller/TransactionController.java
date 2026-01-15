@@ -6,6 +6,7 @@ import com.example.kiranastore.dto.TransactionResponseDTO;
 import com.example.kiranastore.service.TransactionService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -20,6 +21,8 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
+    //  USER can create transactions
+    @PreAuthorize("hasRole('USER')")
     @PostMapping
     public ResponseEntity<TransactionResponseDTO> createTransaction(
             @Valid @RequestBody TransactionRequestDTO request) {
@@ -29,6 +32,8 @@ public class TransactionController {
         );
     }
 
+    //  USER can view own transaction
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/{id}")
     public ResponseEntity<TransactionDetailsResponseDTO> getTransaction(
             @PathVariable UUID id) {
@@ -37,4 +42,6 @@ public class TransactionController {
                 transactionService.getTransaction(id)
         );
     }
+
+
 }
