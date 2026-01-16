@@ -21,6 +21,11 @@ spring:
       uri: mongodb://localhost:27017/kiranastore
       database: kiranastore   # 🔥 THIS IS THE IMPORTANT FIX
 
+
+    redis:
+      host: localhost
+      port: 6379
+
   kafka:
     bootstrap-servers: localhost:9092
 
@@ -35,6 +40,9 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+
+
 
 management:
   endpoints:

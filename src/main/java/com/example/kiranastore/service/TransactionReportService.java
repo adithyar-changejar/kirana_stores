@@ -2,6 +2,8 @@ package com.example.kiranastore.service;
 
 import com.example.kiranastore.dao.TransactionDao;
 import com.example.kiranastore.mongo.ReportDocument;
+import com.example.kiranastore.repository.ReportRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
@@ -13,15 +15,29 @@ public class TransactionReportService {
     private final TransactionDao transactionDao;
     private final ReportLifecycleService lifecycleService;
     private final TransactionAggregationService aggregationService;
+    private final ReportRepository reportRepository;
 
     public TransactionReportService(
             TransactionDao transactionDao,
             ReportLifecycleService lifecycleService,
-            TransactionAggregationService aggregationService
+            TransactionAggregationService aggregationService,
+            ReportRepository reportRepository
     ) {
         this.transactionDao = transactionDao;
         this.lifecycleService = lifecycleService;
         this.aggregationService = aggregationService;
+        this.reportRepository = reportRepository;
+    }
+
+
+    @Cacheable(value = "reports", key = "#requestId")
+    public ReportDocument getReportByRequestId(String requestId) {
+
+
+        System.out.println("FETCHING REPORT FROM MONGODB");
+
+        return reportRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Report not found"));
     }
 
     public void generateTransactionReport(

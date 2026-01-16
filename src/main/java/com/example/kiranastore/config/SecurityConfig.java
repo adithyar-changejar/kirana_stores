@@ -1,23 +1,26 @@
-package com.example.kiranastore.config;
+package com.example.kiranastore.security;
 
 import com.example.kiranastore.auth.JwtAuthenticationFilter;
 import com.example.kiranastore.auth.JwtTokenProvider;
-import com.example.kiranastore.security.CustomAccessDeniedHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableMethodSecurity   // ⭐ IMPORTANT
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final StringRedisTemplate redisTemplate;
 
-    public SecurityConfig(JwtTokenProvider jwtTokenProvider) {
+    public SecurityConfig(
+            JwtTokenProvider jwtTokenProvider,
+            StringRedisTemplate redisTemplate
+    ) {
         this.jwtTokenProvider = jwtTokenProvider;
+        this.redisTemplate = redisTemplate;
     }
 
     @Bean
@@ -29,12 +32,16 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**", "/health").permitAll()
                         .anyRequest().authenticated()
                 )
-                .exceptionHandling(ex -> ex
-                        .accessDeniedHandler(new CustomAccessDeniedHandler())
+                .addFilterBefore(
+                        new RateLimitingFilter(redisTemplate),
+                        UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtTokenProvider),
                         UsernamePasswordAuthenticationFilter.class
+                )
+                .exceptionHandling(ex ->
+                        ex.accessDeniedHandler(new CustomAccessDeniedHandler())
                 );
 
         return http.build();
