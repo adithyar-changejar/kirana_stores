@@ -1,40 +1,28 @@
 package com.example.kiranastore.kafka;
 
 import com.example.kiranastore.dto.ReportRequestEvent;
-import com.example.kiranastore.service.TransactionReportService;
+import com.example.kiranastore.service.ReportLifecycleService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class ReportRequestConsumer {
 
-    /*
-- Kafka consumer
-- Receive report events
-- Trigger report generation
-- Async processing
-*/
-
-
-    private final TransactionReportService transactionReportService;
-
-    public ReportRequestConsumer(TransactionReportService transactionReportService) {
-        this.transactionReportService = transactionReportService;
-    }
+    private final ReportLifecycleService lifecycleService;
 
     @KafkaListener(
             topics = "report_requests",
             groupId = "report-consumer-group"
     )
-    public void consumeReportRequest(ReportRequestEvent event) {
+    public void consume(ReportRequestEvent event) {
 
-        System.out.println("📥 Kafka message received: " + event);
-
-        transactionReportService.generateTransactionReport(
+        lifecycleService.generateReport(
+                event.getRequestId(),
                 event.getUserId(),
                 event.getFromTime(),
-                event.getToTime(),
-                event.getRequestId()
+                event.getToTime()
         );
     }
 }

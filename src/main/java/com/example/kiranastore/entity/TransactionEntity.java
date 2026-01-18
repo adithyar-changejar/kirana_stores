@@ -11,9 +11,9 @@ import java.util.UUID;
 @Table(
         name = "transactions",
         indexes = {
-                @Index(name = "idx_txn_user_id", columnList = "userId"),
-                @Index(name = "idx_txn_created_at", columnList = "createdAt"),
-                @Index(name = "idx_txn_user_created", columnList = "userId, createdAt")
+                @Index(name = "idx_txn_user_id", columnList = "user_id"),
+                @Index(name = "idx_txn_created_at", columnList = "created_at"),
+                @Index(name = "idx_txn_user_created", columnList = "user_id, created_at")
         }
 )
 @Data
@@ -21,10 +21,10 @@ public class TransactionEntity {
 
     @Id
     @GeneratedValue
-    private UUID transactionId;
+    private UUID id;
 
-    @Column(nullable = false)
-    private String userId;
+    @Column(name = "user_id", nullable = false)
+    private String userId;   // 🔗 Mongo ObjectId (hex string)
 
     @Column(nullable = false)
     private BigDecimal amount;
@@ -33,14 +33,11 @@ public class TransactionEntity {
     private CurrencyType currency;
 
     @Enumerated(EnumType.STRING)
-    private TransactionStatus status;
-
-    @Enumerated(EnumType.STRING)
     private TransactionType type;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    @Enumerated(EnumType.STRING)
+    private TransactionStatus status;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
     private Date updatedAt;
 }

@@ -11,7 +11,7 @@ import java.util.UUID;
 @Table(
         name = "accounts",
         indexes = {
-                @Index(name = "idx_account_user_id", columnList = "userId")
+                @Index(name = "idx_account_user_id", columnList = "user_id")
         }
 )
 @Data
@@ -19,10 +19,10 @@ public class AccountEntity {
 
     @Id
     @GeneratedValue
-    private UUID accountId;
+    private UUID id;
 
-    @Column(nullable = false, unique = true)
-    private String userId;
+    @Column(name = "user_id", nullable = false, unique = true)
+    private String userId;   // 🔗 Mongo ObjectId (hex string)
 
     @Column(nullable = false)
     private BigDecimal balance;

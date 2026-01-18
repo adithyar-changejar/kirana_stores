@@ -1,102 +1,71 @@
 package com.example.kiranastore.service;
 
-import com.example.kiranastore.dao.TransactionDao;
+import com.example.kiranastore.dto.ReportResponseDTO;
 import com.example.kiranastore.mongo.ReportDocument;
 import com.example.kiranastore.repository.ReportRepository;
+import org.bson.types.ObjectId;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-
-import java.time.ZoneId;
-import java.util.Date;
 
 @Service
 public class TransactionReportService {
 
-    private final TransactionDao transactionDao;
-    private final ReportLifecycleService lifecycleService;
-    private final TransactionAggregationService aggregationService;
     private final ReportRepository reportRepository;
 
-    public TransactionReportService(
-            TransactionDao transactionDao,
-            ReportLifecycleService lifecycleService,
-            TransactionAggregationService aggregationService,
-            ReportRepository reportRepository
-    ) {
-        this.transactionDao = transactionDao;
-        this.lifecycleService = lifecycleService;
-        this.aggregationService = aggregationService;
+    public TransactionReportService(ReportRepository reportRepository) {
         this.reportRepository = reportRepository;
     }
 
-
-    @Cacheable(value = "reports", key = "#requestId")
-    public ReportDocument getReportByRequestId(String requestId) {
-
-
-        System.out.println("FETCHING REPORT FROM MONGODB");
-
-        return reportRepository.findById(requestId)
-                .orElseThrow(() -> new RuntimeException("Report not found"));
-    }
-
-    public void generateTransactionReport(
-            String userId,
-            Date from,
-            Date to,
-            String requestId
+    /**
+     * 👤 USER ACCESS (userId enforced)
+     */
+    @Cacheable(value = "reports", key = "#reportId")
+    public ReportResponseDTO getReportByIdForUser(
+            String reportId,
+            String userId
     ) {
+        System.out.println("📦 USER CACHE MISS → MongoDB | reportId=" + reportId);
 
-        ReportDocument report = lifecycleService.markInProgress(requestId);
+        ObjectId objectId = new ObjectId(reportId);
 
-        try {
-            Date normalizedFrom = normalizeStart(from);
-            Date normalizedTo = normalizeEnd(to);
+        ReportDocument report = reportRepository.findById(objectId)
+                .orElseThrow(() -> new RuntimeException("Report not found"));
 
-            var transactions =
-                    transactionDao.findByUserIdAndCreatedAtBetween(
-                            userId,
-                            normalizedFrom,
-                            normalizedTo
-                    );
-
-            var result = aggregationService.aggregate(transactions);
-
-            report.setFromTime(normalizedFrom);
-            report.setToTime(normalizedTo);
-
-            lifecycleService.markCompleted(
-                    report,
-                    result.totalCredits(),
-                    result.totalDebits(),
-                    result.netAmount(),
-                    result.totalTransactions()
-            );
-
-        } catch (Exception e) {
-            lifecycleService.markFailed(report);
-            throw e;
+        if (!report.getUserId().equals(userId)) {
+            throw new RuntimeException("Access denied");
         }
+
+        return map(report);
     }
 
-    private Date normalizeStart(Date date) {
-        return Date.from(
-                date.toInstant()
-                        .atZone(ZoneId.systemDefault())
-                        .toLocalDate()
-                        .atStartOfDay(ZoneId.systemDefault())
-                        .toInstant()
-        );
+    /**
+     * 🔐 ADMIN / SUPER_ADMIN ACCESS (NO userId check)
+     */
+    public ReportResponseDTO getReportForAdmin(String reportId) {
+
+        ObjectId objectId;
+        try {
+            objectId = new ObjectId(reportId);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid reportId");
+        }
+
+        ReportDocument report = reportRepository.findById(objectId)
+                .orElseThrow(() -> new RuntimeException("Report not found"));
+
+        return map(report);
     }
 
-    private Date normalizeEnd(Date date) {
-        return Date.from(
-                date.toInstant()
-                        .atZone(ZoneId.systemDefault())
-                        .toLocalDate()
-                        .atTime(23, 59, 59)
-                        .atZone(ZoneId.systemDefault())
-                        .toInstant()
+    private ReportResponseDTO map(ReportDocument report) {
+        return new ReportResponseDTO(
+                report.getId().toHexString(),
+                report.getFromTime(),
+                report.getToTime(),
+                report.getTotalCredits(),
+                report.getTotalDebits(),
+                report.getNetAmount(),
+                report.getTotalTransactions(),
+                report.getStatus()
         );
     }
 }

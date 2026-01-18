@@ -35,22 +35,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 if (jwtTokenProvider.validateToken(token)) {
 
-                    String userId = jwtTokenProvider.getUserId(token);
+                    String userId = jwtTokenProvider.getUserId(token); // ObjectId hex
                     String role = jwtTokenProvider.getRole(token);
 
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(
-                                    userId,
+                                    userId, // 👈 principal = Mongo ObjectId (String)
                                     null,
                                     List.of(new SimpleGrantedAuthority("ROLE_" + role))
                             );
 
                     SecurityContextHolder.getContext()
                             .setAuthentication(authentication);
-
                 }
             } catch (Exception e) {
-                System.out.println("❌ JWT ERROR: " + e.getMessage());
                 SecurityContextHolder.clearContext();
             }
         }

@@ -8,10 +8,6 @@ public class TransactionValidator {
 
     public void validate(TransactionRequestDTO request) {
 
-        if (request.getUserId() == null || request.getUserId().trim().isEmpty()) {
-            throw new IllegalArgumentException("UserId cannot be null or empty");
-        }
-
         if (request.getAmount() == null) {
             throw new IllegalArgumentException("Amount cannot be null");
         }

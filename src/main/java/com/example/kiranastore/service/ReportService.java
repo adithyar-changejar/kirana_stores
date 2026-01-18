@@ -5,50 +5,41 @@ import com.example.kiranastore.entity.ReportStatus;
 import com.example.kiranastore.kafka.ReportRequestProducer;
 import com.example.kiranastore.mongo.ReportDocument;
 import com.example.kiranastore.repository.ReportRepository;
+import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class ReportService {
 
-    private final ReportRequestProducer producer;
     private final ReportRepository reportRepository;
-
-    public ReportService(
-            ReportRequestProducer producer,
-            ReportRepository reportRepository
-    ) {
-        this.producer = producer;
-        this.reportRepository = reportRepository;
-    }
+    private final ReportRequestProducer producer;
 
     public String requestReport(String userId, Date from, Date to) {
 
-        String requestId = UUID.randomUUID().toString();
+        ReportDocument report = ReportDocument.builder()
+                .userId(userId)
+                .fromTime(from)
+                .toTime(to)
+                .status(ReportStatus.REQUESTED)
+                .createdAt(new Date())
+                .updatedAt(new Date())
+                .build();
 
-        //  SAVE REPORT WITH REQUESTED STATUS
-        ReportDocument report = new ReportDocument();
-        report.setReportId(requestId);
-        report.setUserId(userId);
-        report.setFromTime(from);
-        report.setToTime(to);
-        report.setStatus(ReportStatus.REQUESTED);
-        report.setGeneratedAt(new Date());
+        report = reportRepository.save(report);
 
-        reportRepository.save(report);
-
-        //  SEND KAFKA EVENT
-        ReportRequestEvent event = new ReportRequestEvent(
-                userId,
-                from,
-                to,
-                requestId
+        producer.sendReportRequest(
+                ReportRequestEvent.builder()
+                        .requestId(report.getId().toHexString())
+                        .userId(userId)
+                        .fromTime(from)
+                        .toTime(to)
+                        .build()
         );
 
-        producer.sendReportRequest(event);
-
-        return requestId;
+        return report.getId().toHexString();
     }
 }

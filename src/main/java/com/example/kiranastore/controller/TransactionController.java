@@ -7,6 +7,7 @@ import com.example.kiranastore.service.TransactionService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -21,27 +22,27 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
-    //  USER can create transactions
     @PreAuthorize("hasRole('USER')")
     @PostMapping
     public ResponseEntity<TransactionResponseDTO> createTransaction(
-            @Valid @RequestBody TransactionRequestDTO request) {
+            @Valid @RequestBody TransactionRequestDTO request,
+            Authentication authentication
+    ) {
+
+        String userId = authentication.getName(); // Mongo ObjectId (hex)
 
         return ResponseEntity.ok(
-                transactionService.createTransaction(request)
+                transactionService.createTransaction(userId, request)
         );
     }
 
-    //  USER can view own transaction
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/{id}")
     public ResponseEntity<TransactionDetailsResponseDTO> getTransaction(
-            @PathVariable UUID id) {
-
+            @PathVariable UUID id
+    ) {
         return ResponseEntity.ok(
                 transactionService.getTransaction(id)
         );
     }
-
-
 }

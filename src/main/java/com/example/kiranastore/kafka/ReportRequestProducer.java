@@ -7,24 +7,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class ReportRequestProducer {
 
-    /*
-- Kafka producer
-- Publish report events
-- Send async messages
-- Trigger consumers
-*/
-
-
     private static final String TOPIC = "report_requests";
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<String, ReportRequestEvent> kafkaTemplate;
 
-    public ReportRequestProducer(KafkaTemplate<String, Object> kafkaTemplate) {
+    public ReportRequestProducer(
+            KafkaTemplate<String, ReportRequestEvent> kafkaTemplate
+    ) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    //TODO could create kafka service as generic
     public void sendReportRequest(ReportRequestEvent event) {
         kafkaTemplate.send(TOPIC, event.getRequestId(), event);
+        System.out.println("📨 Sent report request to Kafka | " + event);
     }
 }

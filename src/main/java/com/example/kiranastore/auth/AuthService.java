@@ -7,7 +7,7 @@ import com.example.kiranastore.dto.RegisterRequestDTO;
 import com.example.kiranastore.entity.UserRole;
 import com.example.kiranastore.mongo.UserDocument;
 import com.example.kiranastore.repository.UserRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -17,49 +17,44 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder;
 
     public AuthService(
             UserRepository userRepository,
-            JwtTokenProvider jwtTokenProvider
+            JwtTokenProvider jwtTokenProvider,
+            PasswordEncoder passwordEncoder
     ) {
         this.userRepository = userRepository;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.passwordEncoder = passwordEncoder;
     }
 
-
-    // REGISTER
-
+    // ✅ REGISTER — ALWAYS USER
     public void register(RegisterRequestDTO request) {
 
-        // Check if user already exists
-        if (userRepository.existsById(request.getUserId())) {
-            throw new IllegalArgumentException("User already exists");
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email already registered");
         }
 
-        // Create user document
         UserDocument user = new UserDocument();
-        user.setUserId(request.getUserId());
         user.setName(request.getName());
+        user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(UserRole.valueOf(request.getRole()));
+        user.setRole(UserRole.USER);
         user.setCreatedAt(new Date());
+        user.setUpdatedAt(new Date());
 
-        // Save user
         userRepository.save(user);
     }
 
 
-    // LOGIN
-
+    // ✅ LOGIN
     public LoginResponseDTO login(LoginRequestDTO request) {
 
-        // Fetch user
-        UserDocument user = userRepository.findById(request.getUserId())
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Invalid credentials"));
+        UserDocument user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
 
-        // Validate password (CORRECT WAY)
+
         if (!passwordEncoder.matches(
                 request.getPassword(),
                 user.getPassword()
@@ -67,17 +62,16 @@ public class AuthService {
             throw new IllegalArgumentException("Invalid credentials");
         }
 
-        // Generate JWT
         String token = jwtTokenProvider.generateToken(
-                user.getUserId(),
+                user.getId().toHexString(),
                 user.getRole().name()
         );
 
-        // Return response
         return new LoginResponseDTO(
                 token,
                 "Bearer",
                 jwtTokenProvider.getExpiry()
         );
     }
+
 }

@@ -5,15 +5,15 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.time.Duration;
 
 public class RateLimitingFilter extends OncePerRequestFilter {
-
-    private static final int LIMIT = 10;
-    private static final int WINDOW_SEC = 60;
 
     private final StringRedisTemplate redisTemplate;
 
@@ -28,20 +28,78 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String key = "rate:" + request.getRemoteAddr();
+        String path = request.getRequestURI();
 
+        /* ===============================
+           1️⃣ Skip auth endpoints
+           =============================== */
+        if (path.startsWith("/auth")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        Authentication auth =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        /* ===============================
+           2️⃣ SUPER_ADMIN → unlimited
+           =============================== */
+        if (auth != null && auth.isAuthenticated()) {
+            for (GrantedAuthority authority : auth.getAuthorities()) {
+                if (authority.getAuthority().equals("ROLE_SUPER_ADMIN")) {
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+            }
+        }
+
+        /* ===============================
+           3️⃣ Determine rate limit
+           =============================== */
+        int limit;
+        int windowSeconds = 60;
+
+        if (path.startsWith("/admin")) {
+            limit = 3;
+        } else if (path.startsWith("/transactions")) {
+            limit = 20;
+        } else if (path.startsWith("/reports")) {
+            limit = 10;
+        } else {
+            limit = 10;
+        }
+
+        /* ===============================
+           4️⃣ Build Redis key
+           =============================== */
+        String key;
+
+        if (auth != null && auth.isAuthenticated()) {
+            // userId comes from JWT (principal)
+            key = "rate:user:" + auth.getName() + ":" + path;
+        } else {
+            key = "rate:ip:" + request.getRemoteAddr() + ":" + path;
+        }
+
+        /* ===============================
+           5️⃣ Redis increment
+           =============================== */
         Long count = redisTemplate.opsForValue().increment(key);
 
         if (count != null && count == 1) {
-            redisTemplate.expire(key, Duration.ofSeconds(WINDOW_SEC));
+            redisTemplate.expire(key, Duration.ofSeconds(windowSeconds));
         }
 
-        // 🔥 PROOF LOG — MUST BE HERE
+        /* ===============================
+           6️⃣ Proof logs
+           =============================== */
         System.out.println(
-                "⏱ RATE LIMIT | key=" + key + " count=" + count
+                "⏱ RATE LIMIT | key=" + key +
+                        " count=" + count +
+                        " limit=" + limit
         );
 
-        if (count != null && count > LIMIT) {
+        if (count != null && count > limit) {
             response.setStatus(429);
             response.getWriter().write("Too many requests");
             return;

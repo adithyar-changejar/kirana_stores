@@ -1,22 +1,17 @@
 package com.example.kiranastore.controller;
 
 import com.example.kiranastore.dto.ReportRequestDTO;
-import com.example.kiranastore.dto.ReportResponseDTO;
+import com.example.kiranastore.dto.ReportRequestResponseDTO;
 import com.example.kiranastore.entity.ReportStatus;
 import com.example.kiranastore.service.ReportService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/reports")
 public class ReportController {
-
-    /*
-    - Report API entry
-    - Accept report request
-    - Trigger async flow
-    - Return request id
-    */
 
     private final ReportService reportService;
 
@@ -24,22 +19,26 @@ public class ReportController {
         this.reportService = reportService;
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping
-    public ResponseEntity<ReportResponseDTO> requestReport(
-            @RequestBody ReportRequestDTO request
+    public ResponseEntity<ReportRequestResponseDTO> requestReport(
+            @RequestBody ReportRequestDTO request,
+            Authentication authentication
     ) {
 
-        String requestId = reportService.requestReport(
-                request.getUserId(),
+        String userId = authentication.getName(); // Mongo ObjectId hex
+
+        String reportId = reportService.requestReport(
+                userId,
                 request.getFromTime(),
                 request.getToTime()
         );
 
         return ResponseEntity.ok(
-                new ReportResponseDTO(requestId, ReportStatus.REQUESTED)
+                new ReportRequestResponseDTO(
+                        reportId,
+                        ReportStatus.REQUESTED
+                )
         );
     }
 }
-
-
-

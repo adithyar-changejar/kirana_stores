@@ -1,5 +1,6 @@
 package com.example.kiranastore.config;
 
+import com.example.kiranastore.dto.ReportRequestEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.annotation.Bean;
@@ -11,29 +12,35 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
+
 @Configuration
 public class KafkaProducerConfig {
 
     @Bean
-    public ProducerFactory<String, Object> producerFactory() {
+    public ProducerFactory<String, ReportRequestEvent> producerFactory() {
 
-        Map<String, Object> config = new HashMap<>();
-        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        Map<String, Object> props = new HashMap<>();
 
-        JsonSerializer<Object> jsonSerializer = new JsonSerializer<>();
-        jsonSerializer.setAddTypeInfo(false);
-
-        return new DefaultKafkaProducerFactory<>(
-                config,
-                new StringSerializer(),
-                jsonSerializer
+        props.put(
+                ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                "localhost:9092"
         );
+
+        props.put(
+                ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
+                StringSerializer.class
+        );
+
+        props.put(
+                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+                JsonSerializer.class
+        );
+
+        return new DefaultKafkaProducerFactory<>(props);
     }
 
     @Bean
-    public KafkaTemplate<String, Object> kafkaTemplate() {
+    public KafkaTemplate<String, ReportRequestEvent> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 }

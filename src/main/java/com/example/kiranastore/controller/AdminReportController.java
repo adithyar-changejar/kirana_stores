@@ -1,25 +1,28 @@
 package com.example.kiranastore.controller;
 
-import com.example.kiranastore.mongo.ReportDocument;
-import com.example.kiranastore.repository.ReportRepository;
+import com.example.kiranastore.dto.ReportResponseDTO;
+import com.example.kiranastore.service.TransactionReportService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/admin/reports")
 public class AdminReportController {
 
-    private final ReportRepository reportRepository;
+    private final TransactionReportService reportService;
 
-    public AdminReportController(ReportRepository reportRepository) {
-        this.reportRepository = reportRepository;
+    public AdminReportController(TransactionReportService reportService) {
+        this.reportService = reportService;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping
-    public List<ReportDocument> getAllReports() {
-        return reportRepository.findAll();
+    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+    @GetMapping("/{reportId}")
+    public ResponseEntity<ReportResponseDTO> getReport(
+            @PathVariable String reportId
+    ) {
+        return ResponseEntity.ok(
+                reportService.getReportForAdmin(reportId)
+        );
     }
 }

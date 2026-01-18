@@ -1,18 +1,20 @@
 package com.example.kiranastore.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Data
-@NoArgsConstructor
+@Builder                // ✅ THIS ENABLES builder()
+@NoArgsConstructor      // ✅ REQUIRED for Kafka deserialization
 @AllArgsConstructor
 public class ReportRequestEvent {
 
+    private String requestId;
     private String userId;
     private Date fromTime;
     private Date toTime;
-    private String requestId;
 }

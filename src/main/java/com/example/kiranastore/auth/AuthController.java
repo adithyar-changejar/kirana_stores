@@ -18,7 +18,6 @@ public class AuthController {
         this.authService = authService;
     }
 
-    // REGISTER
     @PostMapping("/register")
     public ResponseEntity<String> register(
             @Valid @RequestBody RegisterRequestDTO request
@@ -27,7 +26,6 @@ public class AuthController {
         return ResponseEntity.ok("User registered successfully");
     }
 
-    // LOGIN
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(
             @RequestBody LoginRequestDTO request

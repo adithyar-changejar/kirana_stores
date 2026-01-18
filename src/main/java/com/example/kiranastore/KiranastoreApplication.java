@@ -2,11 +2,13 @@ package com.example.kiranastore;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.core.env.Environment;
 
 import jakarta.annotation.PostConstruct;
 
 @SpringBootApplication
+@EnableCaching
 public class KiranastoreApplication {
 
     private final Environment env;
