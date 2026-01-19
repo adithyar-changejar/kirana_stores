@@ -22,7 +22,7 @@ public class AccountEntity {
     private UUID id;
 
     @Column(name = "user_id", nullable = false, unique = true)
-    private String userId;   // 🔗 Mongo ObjectId (hex string)
+    private String userId;   //
 
     @Column(nullable = false)
     private BigDecimal balance;

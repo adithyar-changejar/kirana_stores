@@ -27,6 +27,7 @@ spring:
 
   kafka:
     bootstrap-servers: localhost:9092
+
     consumer:
       group-id: report-consumer-group
       auto-offset-reset: earliest
@@ -34,11 +35,11 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
+
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
-# ✅ MUST BE TOP LEVEL
 logging:
   level:
     org.springframework.security: DEBUG
@@ -47,4 +48,10 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: kiranastore

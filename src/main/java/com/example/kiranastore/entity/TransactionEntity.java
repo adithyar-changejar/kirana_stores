@@ -24,7 +24,7 @@ public class TransactionEntity {
     private UUID id;
 
     @Column(name = "user_id", nullable = false)
-    private String userId;   // 🔗 Mongo ObjectId (hex string)
+    private String userId;   //
 
     @Column(nullable = false)
     private BigDecimal amount;

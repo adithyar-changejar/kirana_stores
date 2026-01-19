@@ -31,7 +31,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
 
         /* ===============================
-           1️⃣ Skip auth endpoints
+            Skip auth endpoints
            =============================== */
         if (path.startsWith("/auth")) {
             filterChain.doFilter(request, response);
@@ -42,7 +42,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().getAuthentication();
 
         /* ===============================
-           2️⃣ SUPER_ADMIN → unlimited
+            SUPER_ADMIN → unlimited
            =============================== */
         if (auth != null && auth.isAuthenticated()) {
             for (GrantedAuthority authority : auth.getAuthorities()) {
@@ -54,7 +54,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         }
 
         /* ===============================
-           3️⃣ Determine rate limit
+           ⃣ Determine rate limit
            =============================== */
         int limit;
         int windowSeconds = 60;
@@ -70,7 +70,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         }
 
         /* ===============================
-           4️⃣ Build Redis key
+           4⃣ Build Redis key
            =============================== */
         String key;
 
@@ -82,7 +82,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         }
 
         /* ===============================
-           5️⃣ Redis increment
+           5⃣ Redis increment
            =============================== */
         Long count = redisTemplate.opsForValue().increment(key);
 
@@ -91,7 +91,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         }
 
         /* ===============================
-           6️⃣ Proof logs
+           6️ Proof logs
            =============================== */
         System.out.println(
                 "⏱ RATE LIMIT | key=" + key +

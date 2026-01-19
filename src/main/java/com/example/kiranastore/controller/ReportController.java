@@ -26,7 +26,7 @@ public class ReportController {
             Authentication authentication
     ) {
 
-        String userId = authentication.getName(); // Mongo ObjectId hex
+        String userId = authentication.getName();
 
         String reportId = reportService.requestReport(
                 userId,

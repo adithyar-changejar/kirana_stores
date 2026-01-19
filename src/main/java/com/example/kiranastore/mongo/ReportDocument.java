@@ -18,7 +18,7 @@ public class ReportDocument {
     @Id
     private ObjectId id;
 
-    private String userId; // Mongo ObjectId stored as HEX STRING
+    private String userId; //
 
     private Date fromTime;
     private Date toTime;

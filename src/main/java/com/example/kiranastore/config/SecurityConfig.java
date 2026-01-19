@@ -11,7 +11,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableMethodSecurity(prePostEnabled = true)  // ✅ THIS WAS MISSING
+@EnableMethodSecurity(prePostEnabled = true) //
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -31,7 +31,14 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/health").permitAll()
+                        // 🔓 PUBLIC ENDPOINTS
+                        .requestMatchers(
+                                "/auth/**",
+                                "/health",
+                                "/actuator/prometheus"
+                        ).permitAll()
+
+                        //  EVERYTHING ELSE
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(

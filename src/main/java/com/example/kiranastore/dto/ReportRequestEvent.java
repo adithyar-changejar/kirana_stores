@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 @Data
-@Builder                // ✅ THIS ENABLES builder()
-@NoArgsConstructor      // ✅ REQUIRED for Kafka deserialization
+@Builder                //
+@NoArgsConstructor      //
 @AllArgsConstructor
 public class ReportRequestEvent {
 
