@@ -1,33 +1,45 @@
+# =========================
+# SERVER
+# =========================
 server:
   port: 8080
 
+# =========================
+# SPRING
+# =========================
 spring:
   application:
-    name: kiranastore   # ✅ ADDED (important for metrics identity)
+    name: kiranastore
 
+  # ---------- PostgreSQL ----------
   datasource:
     url: jdbc:postgresql://localhost:5432/appdb
     username: appuser
     password: apppass
     driver-class-name: org.postgresql.Driver
 
+  # ---------- JPA ----------
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false              # 🔕 no SQL spam
+    open-in-view: false          # ✅ removes warning + good design
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
 
+  # ---------- MongoDB ----------
   data:
     mongodb:
       uri: mongodb://localhost:27017/kiranastore
       database: kiranastore
 
+  # ---------- Redis ----------
   redis:
     host: localhost
     port: 6379
 
+  # ---------- Kafka ----------
   kafka:
     bootstrap-servers: localhost:9092
 
@@ -43,10 +55,41 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
+# =========================
+# LOGGING (NOISE-FREE)
+# =========================
 logging:
   level:
-    org.springframework.security: DEBUG
+    root: INFO
 
+    # ✅ Your application logs
+    com.example.kiranastore: INFO
+
+    # 🔕 Spring framework noise
+    org.springframework.web: WARN
+    org.springframework.security: WARN
+    org.springframework.boot.autoconfigure.security: WARN
+
+    # 🔕 Spring Data repository scan noise (IMPORTANT)
+    org.springframework.data.repository.config: WARN
+    org.springframework.data.jpa.repository.query: WARN
+
+    # 🔕 Persistence noise
+    org.hibernate: WARN
+    org.springframework.orm.jpa: WARN
+    org.mongodb.driver: WARN
+
+    # 🔕 Server noise
+    org.apache.catalina: WARN
+    org.apache.coyote: WARN
+
+    # Kafka
+    org.apache.kafka: WARN
+    org.springframework.kafka: INFO
+
+# =========================
+# ACTUATOR / PROMETHEUS
+# =========================
 management:
   endpoints:
     web:
@@ -58,11 +101,9 @@ management:
       show-details: always
 
   metrics:
-    # 🔖 global tag for Prometheus
     tags:
       application: kiranastore
 
-    # 🔥 REQUIRED for histogram_quantile(), p95, p99
     distribution:
       percentiles-histogram:
         http.server.requests: true

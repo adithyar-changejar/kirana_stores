@@ -1,0 +1,36 @@
+<configuration>
+
+    <!-- Console logs (for local debugging) -->
+    <appender name="CONSOLE"
+              class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                %d{HH:mm:ss.SSS} %-5level [%thread]
+                %logger{36} [requestId=%X{requestId}] - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!-- Logstash appender -->
+    <appender name="LOGSTASH"
+              class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+
+        <destination>localhost:5000</destination>
+
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdc>true</includeMdc>
+
+            <!-- Static fields -->
+            <customFields>
+                {"service":"kiranastore","env":"local"}
+            </customFields>
+        </encoder>
+    </appender>
+
+    <!-- Root logger -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="LOGSTASH"/>
+    </root>
+
+</configuration>
