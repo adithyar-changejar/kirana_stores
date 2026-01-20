@@ -1,5 +1,6 @@
 package com.example.kiranastore.service;
 
+import com.example.kiranastore.dao.TransactionDao;
 import com.example.kiranastore.entity.ReportStatus;
 import com.example.kiranastore.mongo.ReportDocument;
 import com.example.kiranastore.repository.ReportRepository;
@@ -14,6 +15,7 @@ import java.util.Date;
 public class ReportLifecycleService {
 
     private final ReportRepository reportRepository;
+    private final TransactionDao transactionDao;
 
     public void generateReport(
             String reportId,
@@ -21,7 +23,6 @@ public class ReportLifecycleService {
             Date from,
             Date to
     ) {
-
         ReportDocument report = reportRepository
                 .findById(new ObjectId(reportId))
                 .orElseThrow();
@@ -30,11 +31,19 @@ public class ReportLifecycleService {
         report.setUpdatedAt(new Date());
         reportRepository.save(report);
 
-        // fake aggregation
-        report.setTotalCredits(1000);
-        report.setTotalDebits(200);
-        report.setNetAmount(800);
-        report.setTotalTransactions(3);
+        double totalCredits =
+                transactionDao.getTotalCredits(userId, from, to);
+
+        double totalDebits =
+                transactionDao.getTotalDebits(userId, from, to);
+
+        long totalTransactions =
+                transactionDao.getTransactionCount(userId, from, to);
+
+        report.setTotalCredits(totalCredits);
+        report.setTotalDebits(totalDebits);
+        report.setNetAmount(totalCredits - totalDebits);
+        report.setTotalTransactions((int) totalTransactions);
         report.setStatus(ReportStatus.COMPLETED);
         report.setUpdatedAt(new Date());
 

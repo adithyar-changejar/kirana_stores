@@ -2,6 +2,9 @@ server:
   port: 8080
 
 spring:
+  application:
+    name: kiranastore   # ✅ ADDED (important for metrics identity)
+
   datasource:
     url: jdbc:postgresql://localhost:5432/appdb
     username: appuser
@@ -49,9 +52,17 @@ management:
     web:
       exposure:
         include: health,info,prometheus
+
   endpoint:
     health:
       show-details: always
+
   metrics:
+    # 🔖 global tag for Prometheus
     tags:
       application: kiranastore
+
+    # 🔥 REQUIRED for histogram_quantile(), p95, p99
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true

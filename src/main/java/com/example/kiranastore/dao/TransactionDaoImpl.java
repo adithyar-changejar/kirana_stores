@@ -1,23 +1,16 @@
 package com.example.kiranastore.dao;
 
 import com.example.kiranastore.entity.TransactionEntity;
+import com.example.kiranastore.entity.TransactionType;
 import com.example.kiranastore.repository.TransactionRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public class TransactionDaoImpl implements TransactionDao {
-
-    /*
-    - DAO implementation
-    - Wrap repository
-    - Execute DB calls
-    - Isolate persistence
-    */
 
     private final TransactionRepository transactionRepository;
 
@@ -36,12 +29,28 @@ public class TransactionDaoImpl implements TransactionDao {
     }
 
     @Override
-    public List<TransactionEntity> findByUserIdAndCreatedAtBetween(
-            String userId,
-            Date from,
-            Date to
-    ) {
+    public double getTotalCredits(String userId, Date from, Date to) {
+        return transactionRepository.sumAmountByType(
+                userId,
+                TransactionType.CREDIT,
+                from,
+                to
+        );
+    }
+
+    @Override
+    public double getTotalDebits(String userId, Date from, Date to) {
+        return transactionRepository.sumAmountByType(
+                userId,
+                TransactionType.DEBIT,
+                from,
+                to
+        );
+    }
+
+    @Override
+    public long getTransactionCount(String userId, Date from, Date to) {
         return transactionRepository
-                .findByUserIdAndCreatedAtBetween(userId, from, to);
+                .countByUserIdAndCreatedAtBetween(userId, from, to);
     }
 }
