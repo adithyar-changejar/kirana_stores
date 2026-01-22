@@ -31,7 +31,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // 🔓 PUBLIC ENDPOINTS
+                        //  PUBLIC ENDPOINTS
                         .requestMatchers(
                                 "/auth/**",
                                 "/health",

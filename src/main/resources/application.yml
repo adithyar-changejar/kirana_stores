@@ -22,8 +22,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: false              # 🔕 no SQL spam
-    open-in-view: false          # ✅ removes warning + good design
+    show-sql: false
+    open-in-view: false
     properties:
       hibernate:
         format_sql: false
@@ -55,31 +55,31 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
-# =========================
+
 # LOGGING (NOISE-FREE)
-# =========================
+
 logging:
   level:
     root: INFO
 
-    # ✅ Your application logs
+    #application logs
     com.example.kiranastore: INFO
 
-    # 🔕 Spring framework noise
+    # Spring framework noise
     org.springframework.web: WARN
     org.springframework.security: WARN
     org.springframework.boot.autoconfigure.security: WARN
 
-    # 🔕 Spring Data repository scan noise (IMPORTANT)
+    #  Spring Data repository scan noise (IMPORTANT)
     org.springframework.data.repository.config: WARN
     org.springframework.data.jpa.repository.query: WARN
 
-    # 🔕 Persistence noise
+    #  Persistence noise
     org.hibernate: WARN
     org.springframework.orm.jpa: WARN
     org.mongodb.driver: WARN
 
-    # 🔕 Server noise
+    #  Server noise
     org.apache.catalina: WARN
     org.apache.coyote: WARN
 
@@ -87,9 +87,7 @@ logging:
     org.apache.kafka: WARN
     org.springframework.kafka: INFO
 
-# =========================
 # ACTUATOR / PROMETHEUS
-# =========================
 management:
   endpoints:
     web:

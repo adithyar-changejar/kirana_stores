@@ -1,19 +1,20 @@
 package com.example.kiranastore.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 
 @Data
-@Builder                //
-@NoArgsConstructor      //
+@Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class ReportRequestEvent {
 
-    private String requestId;
+    //  TRACE ID (for logs / Kibana)
+    private String traceId;
+
+    private String reportId;
+
     private String userId;
     private Date fromTime;
     private Date toTime;

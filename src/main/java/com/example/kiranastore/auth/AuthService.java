@@ -29,7 +29,7 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // ✅ REGISTER — ALWAYS USER
+    // REGISTER — ALWAYS USER
     public void register(RegisterRequestDTO request) {
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -48,7 +48,7 @@ public class AuthService {
     }
 
 
-    // ✅ LOGIN
+    //  LOGIN
     public LoginResponseDTO login(LoginRequestDTO request) {
 
         UserDocument user = userRepository.findByEmail(request.getEmail())

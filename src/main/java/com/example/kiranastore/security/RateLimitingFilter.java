@@ -30,9 +30,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        /* ===============================
-            Skip auth endpoints
-           =============================== */
+        /*  Skip auth endpoints*/
         if (path.startsWith("/auth")) {
             filterChain.doFilter(request, response);
             return;
@@ -41,9 +39,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         Authentication auth =
                 SecurityContextHolder.getContext().getAuthentication();
 
-        /* ===============================
-            SUPER_ADMIN → unlimited
-           =============================== */
+        /* SUPER_ADMIN → unlimited*/
         if (auth != null && auth.isAuthenticated()) {
             for (GrantedAuthority authority : auth.getAuthorities()) {
                 if (authority.getAuthority().equals("ROLE_SUPER_ADMIN")) {
@@ -53,9 +49,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             }
         }
 
-        /* ===============================
-           ⃣ Determine rate limit
-           =============================== */
+        /* Determine rate limit */
         int limit;
         int windowSeconds = 60;
 
@@ -69,9 +63,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             limit = 10;
         }
 
-        /* ===============================
-           4⃣ Build Redis key
-           =============================== */
+        /* Build Redis key*/
         String key;
 
         if (auth != null && auth.isAuthenticated()) {
@@ -81,18 +73,14 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             key = "rate:ip:" + request.getRemoteAddr() + ":" + path;
         }
 
-        /* ===============================
-           5⃣ Redis increment
-           =============================== */
+        /* Redis increment */
         Long count = redisTemplate.opsForValue().increment(key);
 
         if (count != null && count == 1) {
             redisTemplate.expire(key, Duration.ofSeconds(windowSeconds));
         }
 
-        /* ===============================
-           6️ Proof logs
-           =============================== */
+        /* Proof logs */
         System.out.println(
                 "⏱ RATE LIMIT | key=" + key +
                         " count=" + count +

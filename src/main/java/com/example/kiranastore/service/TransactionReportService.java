@@ -16,15 +16,13 @@ public class TransactionReportService {
         this.reportRepository = reportRepository;
     }
 
-    /**
-     * 👤 USER ACCESS (userId enforced)
-     */
+    /*USER ACCESS (userId enforced)*/
     @Cacheable(value = "reports", key = "#reportId")
     public ReportResponseDTO getReportByIdForUser(
             String reportId,
             String userId
     ) {
-        System.out.println("📦 USER CACHE MISS → MongoDB | reportId=" + reportId);
+        System.out.println(" USER CACHE MISS → MongoDB | reportId=" + reportId);
 
         ObjectId objectId = new ObjectId(reportId);
 
@@ -38,9 +36,7 @@ public class TransactionReportService {
         return map(report);
     }
 
-    /**
-     * 🔐 ADMIN / SUPER_ADMIN ACCESS (NO userId check)
-     */
+    /*ADMIN / SUPER_ADMIN ACCESS (NO userId check)*/
     public ReportResponseDTO getReportForAdmin(String reportId) {
 
         ObjectId objectId;

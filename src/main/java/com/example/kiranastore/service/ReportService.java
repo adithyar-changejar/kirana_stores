@@ -6,7 +6,7 @@ import com.example.kiranastore.kafka.ReportRequestProducer;
 import com.example.kiranastore.mongo.ReportDocument;
 import com.example.kiranastore.repository.ReportRepository;
 import lombok.RequiredArgsConstructor;
-import org.bson.types.ObjectId;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -33,7 +33,8 @@ public class ReportService {
 
         producer.sendReportRequest(
                 ReportRequestEvent.builder()
-                        .requestId(report.getId().toHexString())
+                        .traceId(MDC.get("requestId"))   //TRACE PROPAGATION
+                        .reportId(report.getId().toHexString())
                         .userId(userId)
                         .fromTime(from)
                         .toTime(to)

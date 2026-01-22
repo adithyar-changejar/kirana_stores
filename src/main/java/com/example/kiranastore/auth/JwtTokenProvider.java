@@ -12,7 +12,7 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    //  MUST be at least 32 chars for HS256
+    //   32 chars for HS256
     private static final String SECRET =
             "ronaldo-is-the-goat-and-manchester-united-is-my-club";
             //"kiranastore-secret-key-very-secure-256bit";

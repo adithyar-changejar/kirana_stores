@@ -21,14 +21,14 @@ public class RequestIdFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String requestId = UUID.randomUUID().toString();
-        MDC.put("requestId", requestId);
+        String requestId = UUID.randomUUID().toString().replace("-", "");
 
         try {
+            MDC.put("requestId", requestId);
+            response.setHeader("X-Request-Id", requestId);
             filterChain.doFilter(request, response);
         } finally {
-            MDC.clear(); // VERY IMPORTANT
+            MDC.clear();
         }
     }
 }
-

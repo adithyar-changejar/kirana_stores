@@ -7,13 +7,15 @@ import com.example.kiranastore.dto.TransactionResponseDTO;
 import com.example.kiranastore.entity.CurrencyType;
 import com.example.kiranastore.entity.TransactionEntity;
 import com.example.kiranastore.entity.TransactionType;
-import com.example.kiranastore.mongo.UserDocument;
 import com.example.kiranastore.repository.UserRepository;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class TransactionService {
 
@@ -41,10 +43,20 @@ public class TransactionService {
      * Create transaction for authenticated user
      * userId is derived from JWT (Mongo ObjectId hex string)
      */
+    @Transactional
     public TransactionResponseDTO createTransaction(
             String userId,
             TransactionRequestDTO request
     ) {
+
+        // 🔍 ENTRY LOG (traceable via requestId)
+        log.info(
+                "Transaction request received | userId={} amount={} currency={} type={}",
+                userId,
+                request.getAmount(),
+                request.getCurrency(),
+                request.getType()
+        );
 
         // 🔒 Ensure user exists
         userRepository.findById(
@@ -85,6 +97,14 @@ public class TransactionService {
 
         TransactionEntity saved = transactionDao.save(transaction);
 
+        // ✅ SUCCESS LOG
+        log.info(
+                "Transaction completed | transactionId={} userId={} status={}",
+                saved.getId(),
+                userId,
+                saved.getStatus()
+        );
+
         return new TransactionResponseDTO(
                 saved.getId(),
                 saved.getStatus()
@@ -95,6 +115,8 @@ public class TransactionService {
      * Fetch transaction by ID
      */
     public TransactionDetailsResponseDTO getTransaction(UUID id) {
+
+        log.info("Fetching transaction | transactionId={}", id);
 
         TransactionEntity entity = transactionDao.findById(id)
                 .orElseThrow(() ->

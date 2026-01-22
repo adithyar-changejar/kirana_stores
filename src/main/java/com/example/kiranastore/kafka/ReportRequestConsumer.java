@@ -3,9 +3,12 @@ package com.example.kiranastore.kafka;
 import com.example.kiranastore.dto.ReportRequestEvent;
 import com.example.kiranastore.service.ReportLifecycleService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ReportRequestConsumer {
@@ -18,11 +21,23 @@ public class ReportRequestConsumer {
     )
     public void consume(ReportRequestEvent event) {
 
-        lifecycleService.generateReport(
-                event.getRequestId(),
-                event.getUserId(),
-                event.getFromTime(),
-                event.getToTime()
-        );
+
+        MDC.put("requestId", event.getTraceId());
+
+        try {
+            log.info("Kafka consumer processing report request");
+
+            lifecycleService.generateReport(
+                    event.getReportId(),
+                    event.getUserId(),
+                    event.getFromTime(),
+                    event.getToTime()
+            );
+
+            log.info("Kafka consumer completed report generation");
+
+        } finally {
+            MDC.clear();
+        }
     }
 }

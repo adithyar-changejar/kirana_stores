@@ -4,6 +4,7 @@ import com.example.kiranastore.dao.AccountDao;
 import com.example.kiranastore.entity.AccountEntity;
 import com.example.kiranastore.entity.CurrencyType;
 import com.example.kiranastore.entity.TransactionType;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -18,6 +19,7 @@ public class AccountService {
         this.accountDao = accountDao;
     }
 
+    @Transactional
     public AccountEntity getOrCreateAccount(String userId) {
 
         return accountDao.findByUserId(userId)

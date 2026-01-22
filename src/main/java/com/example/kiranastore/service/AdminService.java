@@ -29,7 +29,7 @@ public class AdminService {
         UserDocument user = userRepository.findById(objectId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 🚫 Only USER → ADMIN
+        // Only USER → ADMIN
         if (user.getRole() != UserRole.USER) {
             throw new RuntimeException("Only USER can be promoted");
         }

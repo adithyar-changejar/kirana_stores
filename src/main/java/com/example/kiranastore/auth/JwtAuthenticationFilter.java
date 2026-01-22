@@ -40,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(
-                                    userId, // 👈 principal = Mongo ObjectId (String)
+                                    userId,
                                     null,
                                     List.of(new SimpleGrantedAuthority("ROLE_" + role))
                             );
