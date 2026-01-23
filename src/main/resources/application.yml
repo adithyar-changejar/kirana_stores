@@ -55,31 +55,33 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
-
-# LOGGING (NOISE-FREE)
-
+# =========================
+# LOGGING  (SECURITY DEBUG ENABLED)
+# =========================
 logging:
   level:
     root: INFO
 
-    #application logs
+    # application logs
     com.example.kiranastore: INFO
 
-    # Spring framework noise
+    # 🔥 IMPORTANT: enable Spring Security decision logs
+    org.springframework.security: DEBUG
+
+    # reduce framework noise
     org.springframework.web: WARN
-    org.springframework.security: WARN
     org.springframework.boot.autoconfigure.security: WARN
 
-    #  Spring Data repository scan noise (IMPORTANT)
+    # Spring Data noise
     org.springframework.data.repository.config: WARN
     org.springframework.data.jpa.repository.query: WARN
 
-    #  Persistence noise
+    # Persistence noise
     org.hibernate: WARN
     org.springframework.orm.jpa: WARN
     org.mongodb.driver: WARN
 
-    #  Server noise
+    # Server noise
     org.apache.catalina: WARN
     org.apache.coyote: WARN
 
@@ -87,7 +89,9 @@ logging:
     org.apache.kafka: WARN
     org.springframework.kafka: INFO
 
+# =========================
 # ACTUATOR / PROMETHEUS
+# =========================
 management:
   endpoints:
     web:

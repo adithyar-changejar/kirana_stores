@@ -27,32 +27,48 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
+        System.out.println("---- JWT FILTER START ----");
+        System.out.println("URI = " + request.getRequestURI());
+
         String header = request.getHeader("Authorization");
+        System.out.println("Authorization Header = " + header);
 
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
+            System.out.println("Token extracted");
 
             try {
-                if (jwtTokenProvider.validateToken(token)) {
+                boolean valid = jwtTokenProvider.validateToken(token);
+                System.out.println("Token valid = " + valid);
 
-                    String userId = jwtTokenProvider.getUserId(token); // ObjectId hex
-                    String role = jwtTokenProvider.getRole(token);
+                String userId = jwtTokenProvider.getUserId(token);
+                String role = jwtTokenProvider.getRole(token);
 
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(
-                                    userId,
-                                    null,
-                                    List.of(new SimpleGrantedAuthority("ROLE_" + role))
-                            );
+                System.out.println("JWT userId = " + userId);
+                System.out.println("JWT role = " + role);
 
-                    SecurityContextHolder.getContext()
-                            .setAuthentication(authentication);
-                }
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                userId,
+                                null,
+                                List.of(new SimpleGrantedAuthority("ROLE_" + role))
+                        );
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                System.out.println("Authentication set in SecurityContext");
+                System.out.println("Authorities = " + authentication.getAuthorities());
+
             } catch (Exception e) {
-                SecurityContextHolder.clearContext();
+                System.out.println("JWT ERROR ❌");
+                e.printStackTrace();
             }
+        } else {
+            System.out.println("No Bearer token");
         }
 
         filterChain.doFilter(request, response);
+
+        System.out.println("---- JWT FILTER END ----");
     }
 }

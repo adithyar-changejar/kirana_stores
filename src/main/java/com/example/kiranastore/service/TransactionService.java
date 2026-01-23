@@ -10,6 +10,7 @@ import com.example.kiranastore.entity.TransactionType;
 import com.example.kiranastore.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -40,8 +41,8 @@ public class TransactionService {
     }
 
     /**
-     * Create transaction for authenticated user
-     * userId is derived from JWT (Mongo ObjectId hex string)
+     * USER-INITIATED TRANSACTION
+     * (wallet top-up / manual credit or debit)
      */
     @Transactional
     public TransactionResponseDTO createTransaction(
@@ -49,26 +50,24 @@ public class TransactionService {
             TransactionRequestDTO request
     ) {
 
-        // 🔍 ENTRY LOG (traceable via requestId)
         log.info(
-                "Transaction request received | userId={} amount={} currency={} type={}",
+                "Transaction request | userId={} amount={} currency={} type={}",
                 userId,
                 request.getAmount(),
                 request.getCurrency(),
                 request.getType()
         );
 
-        // 🔒 Ensure user exists
-        userRepository.findById(
-                new org.bson.types.ObjectId(userId)
-        ).orElseThrow(() ->
-                new IllegalArgumentException("User does not exist"));
+        // 🔒 ensure user exists
+        userRepository.findById(new ObjectId(userId))
+                .orElseThrow(() ->
+                        new IllegalArgumentException("User does not exist"));
 
         BigDecimal amount = request.getAmount();
         CurrencyType currency = request.getCurrency();
         TransactionType type = request.getType();
 
-        // 🌍 Currency conversion (USD → INR)
+        // 🌍 USD → INR conversion
         if (currency == CurrencyType.USD) {
             amount = amount.multiply(
                     currencyConversionService.getUsdToInrRate()
@@ -76,18 +75,18 @@ public class TransactionService {
             currency = CurrencyType.INR;
         }
 
-        // 🏦 Get or create account
+        // 🏦 account
         var account = accountService.getOrCreateAccount(userId);
 
-        // 💰 Apply transaction to account
+        // 💰 apply transaction
         accountService.applyTransaction(
                 account,
                 amount,
                 type
         );
 
-        // 🧾 Persist transaction
-        TransactionEntity transaction =
+        // 🧾 persist
+        TransactionEntity entity =
                 transactionMapper.toEntity(
                         amount,
                         currency,
@@ -95,15 +94,7 @@ public class TransactionService {
                         userId
                 );
 
-        TransactionEntity saved = transactionDao.save(transaction);
-
-        // ✅ SUCCESS LOG
-        log.info(
-                "Transaction completed | transactionId={} userId={} status={}",
-                saved.getId(),
-                userId,
-                saved.getStatus()
-        );
+        TransactionEntity saved = transactionDao.save(entity);
 
         return new TransactionResponseDTO(
                 saved.getId(),
@@ -112,7 +103,51 @@ public class TransactionService {
     }
 
     /**
-     * Fetch transaction by ID
+     * CHECKOUT TRANSACTION
+     * (system-driven cart payment)
+     * ALWAYS: INR + DEBIT
+     */
+    @Transactional
+    public TransactionResponseDTO createCheckoutTransaction(
+            String userId,
+            BigDecimal amount
+    ) {
+
+        log.info(
+                "Checkout transaction | userId={} amount={} currency=INR type=DEBIT",
+                userId,
+                amount
+        );
+
+        // 🏦 account
+        var account = accountService.getOrCreateAccount(userId);
+
+        // 💰 debit wallet
+        accountService.applyTransaction(
+                account,
+                amount,
+                TransactionType.DEBIT
+        );
+
+        // 🧾 persist transaction
+        TransactionEntity entity =
+                transactionMapper.toEntity(
+                        amount,
+                        CurrencyType.INR,
+                        TransactionType.DEBIT,
+                        userId
+                );
+
+        TransactionEntity saved = transactionDao.save(entity);
+
+        return new TransactionResponseDTO(
+                saved.getId(),
+                saved.getStatus()
+        );
+    }
+
+    /**
+     * FETCH TRANSACTION DETAILS
      */
     public TransactionDetailsResponseDTO getTransaction(UUID id) {
 

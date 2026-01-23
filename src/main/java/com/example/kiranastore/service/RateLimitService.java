@@ -1,29 +1,52 @@
 package com.example.kiranastore.service;
 
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Service
 public class RateLimitService {
 
-    private static final int MAX_REQUESTS = 10;
-    private static final int WINDOW_SECONDS = 60;
+    private final StringRedisTemplate redisTemplate;
 
-    private final RedisTemplate<String, Object> redisTemplate;
-
-    public RateLimitService(RedisTemplate<String, Object> redisTemplate) {
+    public RateLimitService(StringRedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
-    public boolean isAllowed(String key) {
-        Long count = redisTemplate.opsForValue().increment(key);
+    // ✅ Order matters (top → bottom)
+    private static final Map<String, RateLimitRule> RULES = new LinkedHashMap<>();
 
-        if (count == 1) {
-            redisTemplate.expire(key, Duration.ofSeconds(WINDOW_SECONDS));
+    static {
+        RULES.put("/health", new RateLimitRule(10, Duration.ofMinutes(1)));
+        RULES.put("/actuator", new RateLimitRule(10, Duration.ofMinutes(1)));
+        RULES.put("/auth", new RateLimitRule(20, Duration.ofMinutes(1)));
+        RULES.put("/stores", new RateLimitRule(50, Duration.ofMinutes(1)));
+        RULES.put("/cart", new RateLimitRule(10, Duration.ofMinutes(1)));
+        RULES.put("/transactions", new RateLimitRule(5, Duration.ofMinutes(1)));
+        RULES.put("/admin", new RateLimitRule(3, Duration.ofMinutes(1)));
+    }
+
+    public boolean isAllowed(String key, String path) {
+        RateLimitRule rule = resolveRule(path);
+        String redisKey = "rate_limit:" + path + ":" + key;
+
+        Long count = redisTemplate.opsForValue().increment(redisKey);
+
+        if (count != null && count == 1) {
+            redisTemplate.expire(redisKey, rule.window());
         }
 
-        return count <= MAX_REQUESTS;
+        return count != null && count <= rule.limit();
+    }
+
+    public RateLimitRule resolveRule(String path) {
+        return RULES.entrySet().stream()
+                .filter(e -> path.startsWith(e.getKey()))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse(new RateLimitRule(10, Duration.ofMinutes(1))); // default
     }
 }

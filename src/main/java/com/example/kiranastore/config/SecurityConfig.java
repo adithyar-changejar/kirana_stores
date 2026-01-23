@@ -1,28 +1,30 @@
-package com.example.kiranastore.security;
+package com.example.kiranastore.config;
 
 import com.example.kiranastore.auth.JwtAuthenticationFilter;
 import com.example.kiranastore.auth.JwtTokenProvider;
+import com.example.kiranastore.security.RateLimitFilter;
+import com.example.kiranastore.service.RateLimitService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableMethodSecurity(prePostEnabled = true) //
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final StringRedisTemplate redisTemplate;
+    private final RateLimitService rateLimitService;
 
     public SecurityConfig(
             JwtTokenProvider jwtTokenProvider,
-            StringRedisTemplate redisTemplate
+            RateLimitService rateLimitService
     ) {
         this.jwtTokenProvider = jwtTokenProvider;
-        this.redisTemplate = redisTemplate;
+        this.rateLimitService = rateLimitService;
     }
 
     @Bean
@@ -30,27 +32,25 @@ public class SecurityConfig {
 
         http
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        //  PUBLIC ENDPOINTS
-                        .requestMatchers(
-                                "/auth/**",
-                                "/health",
-                                "/actuator/**"
-                        ).permitAll()
-
-                        //  EVERYTHING ELSE
-                        .anyRequest().authenticated()
+                .sessionManagement(sm ->
+                        sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(
-                        new RateLimitingFilter(redisTemplate),
-                        UsernamePasswordAuthenticationFilter.class
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/health").permitAll()
+                        .requestMatchers("/stores/**").permitAll()
+                        .requestMatchers("/cart/**").hasRole("USER")
+                        .requestMatchers("/transactions/**").hasRole("USER")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtTokenProvider),
                         UsernamePasswordAuthenticationFilter.class
                 )
-                .exceptionHandling(ex ->
-                        ex.accessDeniedHandler(new CustomAccessDeniedHandler())
+                .addFilterAfter(
+                        new RateLimitFilter(rateLimitService),
+                        JwtAuthenticationFilter.class
                 );
 
         return http.build();

@@ -16,6 +16,7 @@ java {
 
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' }   // ✅ REQUIRED FOR BUCKET4J
 }
 
 dependencies {
@@ -23,18 +24,42 @@ dependencies {
     // Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    // Actuator
+    // Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // Validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Actuator + Prometheus
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
 
     // Kafka
     implementation 'org.springframework.kafka:spring-kafka'
 
-    // MongoDB (ONLY ONE)
+    // MongoDB
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
     // JPA + PostgreSQL
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtimeOnly 'org.postgresql:postgresql'
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+
+    // Logging
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+
+
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok'
@@ -42,34 +67,6 @@ dependencies {
 
     // Tests
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
-    implementation 'org.springframework.boot:spring-boot-starter-cache'
-
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-
-    implementation 'io.micrometer:micrometer-registry-prometheus'
-
-    implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
-
-
-
-
-
-
-
-
-    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
-    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
-
-
-
 }
 
 tasks.named('test') {
