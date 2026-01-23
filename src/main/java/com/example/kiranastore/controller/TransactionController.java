@@ -12,16 +12,31 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+/**
+ * The type Transaction controller.
+ */
 @RestController
 @RequestMapping("/transactions")
 public class TransactionController {
 
     private final TransactionService transactionService;
 
+    /**
+     * Instantiates a new Transaction controller.
+     *
+     * @param transactionService the transaction service
+     */
     public TransactionController(TransactionService transactionService) {
         this.transactionService = transactionService;
     }
 
+    /**
+     * Create transaction response entity.
+     *
+     * @param request        the request
+     * @param authentication the authentication
+     * @return the response entity
+     */
     @PreAuthorize("hasRole('USER')")
     @PostMapping
     public ResponseEntity<TransactionResponseDTO> createTransaction(
@@ -36,6 +51,12 @@ public class TransactionController {
         );
     }
 
+    /**
+     * Gets transaction.
+     *
+     * @param id the id
+     * @return the transaction
+     */
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/{id}")
     public ResponseEntity<TransactionDetailsResponseDTO> getTransaction(

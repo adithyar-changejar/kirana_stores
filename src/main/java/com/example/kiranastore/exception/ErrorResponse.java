@@ -6,6 +6,9 @@ import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 
+/**
+ * The type Error response.
+ */
 @Getter
 @AllArgsConstructor
 public class ErrorResponse {

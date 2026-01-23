@@ -8,9 +8,18 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
+/**
+ * The type Transaction aggregation service.
+ */
 @Service
 public class TransactionAggregationService {
 
+    /**
+     * Aggregate aggregation result.
+     *
+     * @param transactions the transactions
+     * @return the aggregation result
+     */
     public AggregationResult aggregate(List<TransactionEntity> transactions) {
 
         BigDecimal credits = transactions.stream()
@@ -33,6 +42,9 @@ public class TransactionAggregationService {
         );
     }
 
+    /**
+     * The type Aggregation result.
+     */
     public record AggregationResult(
             double totalCredits,
             double totalDebits,

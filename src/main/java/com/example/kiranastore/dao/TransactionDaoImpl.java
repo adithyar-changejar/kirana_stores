@@ -9,11 +9,19 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * The type Transaction dao.
+ */
 @Repository
 public class TransactionDaoImpl implements TransactionDao {
 
     private final TransactionRepository transactionRepository;
 
+    /**
+     * Instantiates a new Transaction dao.
+     *
+     * @param transactionRepository the transaction repository
+     */
     public TransactionDaoImpl(TransactionRepository transactionRepository) {
         this.transactionRepository = transactionRepository;
     }

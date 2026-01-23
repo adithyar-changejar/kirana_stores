@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
+/**
+ * The type Report lifecycle service.
+ */
 @Service
 @RequiredArgsConstructor
 public class ReportLifecycleService {
@@ -17,6 +20,14 @@ public class ReportLifecycleService {
     private final ReportRepository reportRepository;
     private final TransactionDao transactionDao;
 
+    /**
+     * Generate report.
+     *
+     * @param reportId the report id
+     * @param userId   the user id
+     * @param from     the from
+     * @param to       the to
+     */
     public void generateReport(
             String reportId,
             String userId,

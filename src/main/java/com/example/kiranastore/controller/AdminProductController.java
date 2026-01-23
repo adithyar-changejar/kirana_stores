@@ -8,6 +8,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * The type Admin product controller.
+ */
 @RestController
 @RequestMapping("/admin/stores/{storeId}/products")
 @RequiredArgsConstructor
@@ -15,6 +18,14 @@ public class AdminProductController {
 
     private final AdminProductService adminProductService;
 
+    /**
+     * Add product product document.
+     *
+     * @param storeId the store id
+     * @param request the request
+     * @param auth    the auth
+     * @return the product document
+     */
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ProductDocument addProduct(

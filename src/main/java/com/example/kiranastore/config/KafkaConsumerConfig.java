@@ -13,9 +13,17 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The type Kafka consumer config.
+ */
 @Configuration
 public class KafkaConsumerConfig {
 
+    /**
+     * Consumer factory consumer factory.
+     *
+     * @return the consumer factory
+     */
     @Bean
     public ConsumerFactory<String, ReportRequestEvent> consumerFactory() {
 
@@ -35,6 +43,11 @@ public class KafkaConsumerConfig {
         );
     }
 
+    /**
+     * Kafka listener container factory concurrent kafka listener container factory.
+     *
+     * @return the concurrent kafka listener container factory
+     */
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, ReportRequestEvent>
     kafkaListenerContainerFactory() {

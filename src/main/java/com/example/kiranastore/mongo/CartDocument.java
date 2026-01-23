@@ -7,6 +7,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
+/**
+ * The type Cart document.
+ */
 @Data
 @Document(collection = "carts")
 public class CartDocument {

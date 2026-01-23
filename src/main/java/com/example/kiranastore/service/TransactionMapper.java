@@ -9,12 +9,21 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.Date;
 
+/**
+ * The type Transaction mapper.
+ */
 @Component
 public class TransactionMapper {
 
     /**
      * Maps request data to TransactionEntity
      * userId = Mongo ObjectId (hex string)
+     *
+     * @param amount   the amount
+     * @param currency the currency
+     * @param type     the type
+     * @param userId   the user id
+     * @return the transaction entity
      */
     public TransactionEntity toEntity(
             BigDecimal amount,

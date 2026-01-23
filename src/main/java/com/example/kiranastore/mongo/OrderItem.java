@@ -4,6 +4,9 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 
+/**
+ * The type Order item.
+ */
 @Data
 public class OrderItem {
 

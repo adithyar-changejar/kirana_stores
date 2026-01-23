@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+/**
+ * The type Report kafka message.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

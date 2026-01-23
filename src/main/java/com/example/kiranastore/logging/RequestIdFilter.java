@@ -11,6 +11,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.UUID;
 
+/**
+ * The type Request id filter.
+ */
 @Component
 public class RequestIdFilter extends OncePerRequestFilter {
 

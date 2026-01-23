@@ -11,10 +11,18 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/**
+ * The type Rate limit filter.
+ */
 public class RateLimitFilter extends OncePerRequestFilter {
 
     private final RateLimitService rateLimitService;
 
+    /**
+     * Instantiates a new Rate limit filter.
+     *
+     * @param rateLimitService the rate limit service
+     */
     public RateLimitFilter(RateLimitService rateLimitService) {
         this.rateLimitService = rateLimitService;
     }

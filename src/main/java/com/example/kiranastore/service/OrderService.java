@@ -12,15 +12,30 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * The type Order service.
+ */
 @Service
 public class OrderService {
 
     private final OrderRepository orderRepository;
 
+    /**
+     * Instantiates a new Order service.
+     *
+     * @param orderRepository the order repository
+     */
     public OrderService(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
     }
 
+    /**
+     * Create order order document.
+     *
+     * @param cart  the cart
+     * @param total the total
+     * @return the order document
+     */
     public OrderDocument createOrder(CartDocument cart, BigDecimal total) {
 
         List<OrderItem> items = cart.getItems().stream().map(this::toOrderItem).toList();

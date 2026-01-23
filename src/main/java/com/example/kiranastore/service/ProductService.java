@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * The type Product service.
+ */
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -21,6 +24,11 @@ public class ProductService {
 
     /**
      * ADMIN → Add product to OWN store
+     *
+     * @param adminId the admin id
+     * @param storeId the store id
+     * @param request the request
+     * @return the product document
      */
     public ProductDocument createProduct(
             String adminId,
@@ -49,6 +57,9 @@ public class ProductService {
 
     /**
      * PUBLIC → Get products by store
+     *
+     * @param storeId the store id
+     * @return the products
      */
     public List<ProductDocument> getProducts(ObjectId storeId) {
         return productRepository.findByStoreIdAndStatus(

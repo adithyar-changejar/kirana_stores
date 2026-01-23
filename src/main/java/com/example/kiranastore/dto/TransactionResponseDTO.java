@@ -6,6 +6,9 @@ import lombok.Getter;
 
 import java.util.UUID;
 
+/**
+ * The type Transaction response dto.
+ */
 @Getter
 @AllArgsConstructor
 public class TransactionResponseDTO {

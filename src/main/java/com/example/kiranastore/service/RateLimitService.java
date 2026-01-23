@@ -7,11 +7,19 @@ import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * The type Rate limit service.
+ */
 @Service
 public class RateLimitService {
 
     private final StringRedisTemplate redisTemplate;
 
+    /**
+     * Instantiates a new Rate limit service.
+     *
+     * @param redisTemplate the redis template
+     */
     public RateLimitService(StringRedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
@@ -29,6 +37,13 @@ public class RateLimitService {
         RULES.put("/admin", new RateLimitRule(3, Duration.ofMinutes(1)));
     }
 
+    /**
+     * Is allowed boolean.
+     *
+     * @param key  the key
+     * @param path the path
+     * @return the boolean
+     */
     public boolean isAllowed(String key, String path) {
         RateLimitRule rule = resolveRule(path);
         String redisKey = "rate_limit:" + path + ":" + key;
@@ -42,6 +57,12 @@ public class RateLimitService {
         return count != null && count <= rule.limit();
     }
 
+    /**
+     * Resolve rule rate limit rule.
+     *
+     * @param path the path
+     * @return the rate limit rule
+     */
     public RateLimitRule resolveRule(String path) {
         return RULES.entrySet().stream()
                 .filter(e -> path.startsWith(e.getKey()))

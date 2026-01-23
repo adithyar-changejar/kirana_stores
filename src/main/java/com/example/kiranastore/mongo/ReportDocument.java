@@ -8,6 +8,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
+/**
+ * The type Report document.
+ */
 @Data
 @Builder
 @NoArgsConstructor

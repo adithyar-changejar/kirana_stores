@@ -9,9 +9,21 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * The interface Transaction repository.
+ */
 public interface TransactionRepository
         extends JpaRepository<TransactionEntity, UUID> {
 
+    /**
+     * Sum amount by type double.
+     *
+     * @param userId the user id
+     * @param type   the type
+     * @param from   the from
+     * @param to     the to
+     * @return the double
+     */
     @Query("""
         SELECT COALESCE(SUM(t.amount), 0)
         FROM TransactionEntity t
@@ -27,6 +39,14 @@ public interface TransactionRepository
             Date to
     );
 
+    /**
+     * Count by user id and created at between long.
+     *
+     * @param userId the user id
+     * @param from   the from
+     * @param to     the to
+     * @return the long
+     */
     long countByUserIdAndCreatedAtBetween(
             String userId,
             Date from,

@@ -8,15 +8,28 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
+/**
+ * The type Admin service.
+ */
 @Service
 public class AdminService {
 
     private final UserRepository userRepository;
 
+    /**
+     * Instantiates a new Admin service.
+     *
+     * @param userRepository the user repository
+     */
     public AdminService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Promote to admin.
+     *
+     * @param userId the user id
+     */
     public void promoteToAdmin(String userId) {
 
         ObjectId objectId;

@@ -7,6 +7,9 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * The type Account entity.
+ */
 @Entity
 @Table(
         name = "accounts",

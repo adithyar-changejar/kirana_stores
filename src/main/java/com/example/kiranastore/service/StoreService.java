@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * The type Store service.
+ */
 @Service
 @RequiredArgsConstructor
 public class StoreService {
@@ -19,14 +22,26 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
 
-    // =========================
+    /**
+     * Gets active stores.
+     *
+     * @return the active stores
+     */
+// =========================
     // PUBLIC – list active stores
     // =========================
     public List<StoreDocument> getActiveStores() {
         return storeRepository.findByStatus(StoreStatus.ACTIVE.name());
     }
 
-    // =========================
+    /**
+     * Create store by super admin store document.
+     *
+     * @param storeName the store name
+     * @param adminId   the admin id
+     * @return the store document
+     */
+// =========================
     // SUPER_ADMIN – create store + assign ADMIN
     // =========================
     public StoreDocument createStoreBySuperAdmin(

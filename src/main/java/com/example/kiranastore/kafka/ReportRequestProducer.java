@@ -6,6 +6,9 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+/**
+ * The type Report request producer.
+ */
 @Slf4j
 @Component
 public class ReportRequestProducer {
@@ -14,10 +17,20 @@ public class ReportRequestProducer {
 
     private final KafkaTemplate<String, ReportRequestEvent> kafkaTemplate;
 
+    /**
+     * Instantiates a new Report request producer.
+     *
+     * @param kafkaTemplate the kafka template
+     */
     public ReportRequestProducer(KafkaTemplate<String, ReportRequestEvent> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
+    /**
+     * Send report request.
+     *
+     * @param event the event
+     */
     public void sendReportRequest(ReportRequestEvent event) {
 
         ProducerRecord<String, ReportRequestEvent> record =

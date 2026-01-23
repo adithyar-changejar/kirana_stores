@@ -16,12 +16,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The type Cart service.
+ */
 @Service
 public class CartService {
 
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
 
+    /**
+     * Instantiates a new Cart service.
+     *
+     * @param cartRepository    the cart repository
+     * @param productRepository the product repository
+     */
     public CartService(
             CartRepository cartRepository,
             ProductRepository productRepository
@@ -33,6 +42,12 @@ public class CartService {
     /**
      * Add product to cart
      * Price is ALWAYS fetched from DB
+     *
+     * @param userId    the user id
+     * @param storeId   the store id
+     * @param productId the product id
+     * @param quantity  the quantity
+     * @return the cart document
      */
     public CartDocument addToCart(
             String userId,
@@ -95,6 +110,9 @@ public class CartService {
 
     /**
      * Get active cart with total
+     *
+     * @param userId the user id
+     * @return the active cart
      */
     public CartResponseDTO getActiveCart(String userId) {
 
@@ -133,6 +151,8 @@ public class CartService {
 
     /**
      * Mark cart as checked out
+     *
+     * @param userId the user id
      */
     public void clearCart(String userId) {
 

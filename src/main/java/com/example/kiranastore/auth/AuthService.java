@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
+/**
+ * The type Auth service.
+ */
 @Service
 public class AuthService {
 
@@ -19,6 +22,13 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
 
+    /**
+     * Instantiates a new Auth service.
+     *
+     * @param userRepository   the user repository
+     * @param jwtTokenProvider the jwt token provider
+     * @param passwordEncoder  the password encoder
+     */
     public AuthService(
             UserRepository userRepository,
             JwtTokenProvider jwtTokenProvider,
@@ -29,7 +39,12 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // REGISTER — ALWAYS USER
+    /**
+     * Register.
+     *
+     * @param request the request
+     */
+// REGISTER — ALWAYS USER
     public void register(RegisterRequestDTO request) {
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -48,7 +63,13 @@ public class AuthService {
     }
 
 
-    //  LOGIN
+    /**
+     * Login login response dto.
+     *
+     * @param request the request
+     * @return the login response dto
+     */
+//  LOGIN
     public LoginResponseDTO login(LoginRequestDTO request) {
 
         UserDocument user = userRepository.findByEmail(request.getEmail())

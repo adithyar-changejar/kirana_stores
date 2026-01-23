@@ -11,6 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
+/**
+ * The type Checkout service.
+ */
 @Service
 @RequiredArgsConstructor
 public class CheckoutService {
@@ -27,6 +30,9 @@ public class CheckoutService {
      * 4. Debit wallet
      * 5. Create order (snapshot)
      * 6. Close cart
+     *
+     * @param userId the user id
+     * @return the checkout response dto
      */
     @Transactional
     public CheckoutResponseDTO checkout(String userId) {

@@ -12,6 +12,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * The type Security config.
+ */
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
@@ -19,6 +22,12 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final RateLimitService rateLimitService;
 
+    /**
+     * Instantiates a new Security config.
+     *
+     * @param jwtTokenProvider the jwt token provider
+     * @param rateLimitService the rate limit service
+     */
     public SecurityConfig(
             JwtTokenProvider jwtTokenProvider,
             RateLimitService rateLimitService
@@ -27,6 +36,13 @@ public class SecurityConfig {
         this.rateLimitService = rateLimitService;
     }
 
+    /**
+     * Filter chain security filter chain.
+     *
+     * @param http the http
+     * @return the security filter chain
+     * @throws Exception the exception
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 

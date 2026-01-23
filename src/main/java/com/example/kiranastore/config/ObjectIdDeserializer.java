@@ -7,8 +7,14 @@ import org.bson.types.ObjectId;
 
 import java.io.IOException;
 
+/**
+ * The type Object id deserializer.
+ */
 public class ObjectIdDeserializer extends StdDeserializer<ObjectId> {
 
+    /**
+     * Instantiates a new Object id deserializer.
+     */
     public ObjectIdDeserializer() {
         super(ObjectId.class);
     }

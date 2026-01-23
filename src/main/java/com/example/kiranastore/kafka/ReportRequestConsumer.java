@@ -8,6 +8,9 @@ import org.slf4j.MDC;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+/**
+ * The type Report request consumer.
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -15,6 +18,11 @@ public class ReportRequestConsumer {
 
     private final ReportLifecycleService lifecycleService;
 
+    /**
+     * Consume.
+     *
+     * @param event the event
+     */
     @KafkaListener(
             topics = "report_requests",
             groupId = "report-consumer-group"

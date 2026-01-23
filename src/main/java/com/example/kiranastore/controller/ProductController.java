@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * The type Product controller.
+ */
 @RestController
 @RequiredArgsConstructor
 public class ProductController {
@@ -19,7 +22,13 @@ public class ProductController {
     private final ProductService productService;
 
 
-    //  PUBLIC: list products
+    /**
+     * Gets products.
+     *
+     * @param storeId the store id
+     * @return the products
+     */
+//  PUBLIC: list products
     @GetMapping("/stores/{storeId}/products")
     public List<ProductDocument> getProducts(@PathVariable String storeId) {
         return productService.getProducts(new ObjectId(storeId));

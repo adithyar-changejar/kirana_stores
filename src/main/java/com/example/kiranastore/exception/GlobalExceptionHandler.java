@@ -9,9 +9,18 @@ import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDateTime;
 
+/**
+ * The type Global exception handler.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    /**
+     * Handle access denied response entity.
+     *
+     * @param ex the ex
+     * @return the response entity
+     */
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDenied(
             AccessDeniedException ex) {
@@ -25,6 +34,12 @@ public class GlobalExceptionHandler {
                 ));
     }
 
+    /**
+     * Handle illegal argument response entity.
+     *
+     * @param ex the ex
+     * @return the response entity
+     */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgument(
             IllegalArgumentException ex) {
@@ -38,6 +53,12 @@ public class GlobalExceptionHandler {
                 ));
     }
 
+    /**
+     * Handle validation response entity.
+     *
+     * @param ex the ex
+     * @return the response entity
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(
             MethodArgumentNotValidException ex) {

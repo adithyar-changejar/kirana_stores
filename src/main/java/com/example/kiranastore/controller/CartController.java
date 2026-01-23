@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 
+/**
+ * The type Cart controller.
+ */
 @RestController
 @RequestMapping("/cart")
 @RequiredArgsConstructor
@@ -20,6 +23,10 @@ public class CartController {
 
     /**
      * Add item to cart
+     *
+     * @param req  the req
+     * @param auth the auth
+     * @return the response entity
      */
     @PostMapping("/add")
     @PreAuthorize("hasRole('USER')")
@@ -42,6 +49,9 @@ public class CartController {
 
     /**
      * View cart + total
+     *
+     * @param authentication the authentication
+     * @return the cart
      */
     @GetMapping
     @PreAuthorize("hasRole('USER')")
@@ -54,6 +64,9 @@ public class CartController {
         );
     }
 
+    /**
+     * The type Add request.
+     */
     @Data
     static class AddRequest {
         private String storeId;

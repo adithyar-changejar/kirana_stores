@@ -4,6 +4,9 @@ import lombok.*;
 
 import java.util.Date;
 
+/**
+ * The type Report request event.
+ */
 @Data
 @Builder
 @AllArgsConstructor

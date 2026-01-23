@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
+/**
+ * The type Report service.
+ */
 @Service
 @RequiredArgsConstructor
 public class ReportService {
@@ -18,6 +21,14 @@ public class ReportService {
     private final ReportRepository reportRepository;
     private final ReportRequestProducer producer;
 
+    /**
+     * Request report string.
+     *
+     * @param userId the user id
+     * @param from   the from
+     * @param to     the to
+     * @return the string
+     */
     public String requestReport(String userId, Date from, Date to) {
 
         ReportDocument report = ReportDocument.builder()

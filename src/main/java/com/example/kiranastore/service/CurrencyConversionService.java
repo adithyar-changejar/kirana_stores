@@ -8,6 +8,9 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.Map;
 
+/**
+ * The type Currency conversion service.
+ */
 @Service
 public class CurrencyConversionService {
 
@@ -20,12 +23,22 @@ public class CurrencyConversionService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final RestTemplate restTemplate = new RestTemplate();
 
+    /**
+     * Instantiates a new Currency conversion service.
+     *
+     * @param redisTemplate the redis template
+     */
     public CurrencyConversionService(
             RedisTemplate<String, Object> redisTemplate
     ) {
         this.redisTemplate = redisTemplate;
     }
 
+    /**
+     * Gets usd to inr rate.
+     *
+     * @return the usd to inr rate
+     */
     @SuppressWarnings("unchecked")
     public BigDecimal getUsdToInrRate() {
 

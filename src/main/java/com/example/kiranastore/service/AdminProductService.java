@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
+/**
+ * The type Admin product service.
+ */
 @Service
 @RequiredArgsConstructor
 public class AdminProductService {
@@ -18,6 +21,16 @@ public class AdminProductService {
     private final StoreRepository storeRepository;
     private final ProductRepository productRepository;
 
+    /**
+     * Add product product document.
+     *
+     * @param adminId  the admin id
+     * @param storeId  the store id
+     * @param name     the name
+     * @param price    the price
+     * @param currency the currency
+     * @return the product document
+     */
     public ProductDocument addProduct(
             String adminId,
             String storeId,

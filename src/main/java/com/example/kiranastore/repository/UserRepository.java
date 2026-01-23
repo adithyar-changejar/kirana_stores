@@ -7,9 +7,18 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+/**
+ * The interface User repository.
+ */
 @Repository
 public interface UserRepository
         extends MongoRepository<UserDocument, ObjectId> {
 
+    /**
+     * Find by email optional.
+     *
+     * @param email the email
+     * @return the optional
+     */
     Optional<UserDocument> findByEmail(String email);
 }

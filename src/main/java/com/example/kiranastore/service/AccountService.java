@@ -10,15 +10,29 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.Date;
 
+/**
+ * The type Account service.
+ */
 @Service
 public class AccountService {
 
     private final AccountDao accountDao;
 
+    /**
+     * Instantiates a new Account service.
+     *
+     * @param accountDao the account dao
+     */
     public AccountService(AccountDao accountDao) {
         this.accountDao = accountDao;
     }
 
+    /**
+     * Gets or create account.
+     *
+     * @param userId the user id
+     * @return the or create account
+     */
     @Transactional
     public AccountEntity getOrCreateAccount(String userId) {
 
@@ -34,6 +48,13 @@ public class AccountService {
                 });
     }
 
+    /**
+     * Apply transaction.
+     *
+     * @param account the account
+     * @param amount  the amount
+     * @param type    the type
+     */
     public void applyTransaction(
             AccountEntity account,
             BigDecimal amount,

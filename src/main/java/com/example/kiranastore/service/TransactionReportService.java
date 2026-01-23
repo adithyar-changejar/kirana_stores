@@ -7,15 +7,30 @@ import org.bson.types.ObjectId;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+/**
+ * The type Transaction report service.
+ */
 @Service
 public class TransactionReportService {
 
     private final ReportRepository reportRepository;
 
+    /**
+     * Instantiates a new Transaction report service.
+     *
+     * @param reportRepository the report repository
+     */
     public TransactionReportService(ReportRepository reportRepository) {
         this.reportRepository = reportRepository;
     }
 
+    /**
+     * Gets report by id for user.
+     *
+     * @param reportId the report id
+     * @param userId   the user id
+     * @return the report by id for user
+     */
     /*USER ACCESS (userId enforced)*/
     @Cacheable(value = "reports", key = "#reportId")
     public ReportResponseDTO getReportByIdForUser(
@@ -36,6 +51,12 @@ public class TransactionReportService {
         return map(report);
     }
 
+    /**
+     * Gets report for admin.
+     *
+     * @param reportId the report id
+     * @return the report for admin
+     */
     /*ADMIN / SUPER_ADMIN ACCESS (NO userId check)*/
     public ReportResponseDTO getReportForAdmin(String reportId) {
 

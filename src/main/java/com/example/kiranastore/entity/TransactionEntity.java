@@ -7,6 +7,9 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * The type Transaction entity.
+ */
 @Entity
 @Table(
         name = "transactions",
@@ -49,6 +52,9 @@ public class TransactionEntity {
     @Column(name = "updated_at", nullable = false)
     private Date updatedAt;
 
+    /**
+     * On create.
+     */
     @PrePersist
     protected void onCreate() {
         Date now = new Date();
@@ -56,6 +62,9 @@ public class TransactionEntity {
         this.updatedAt = now;
     }
 
+    /**
+     * On update.
+     */
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = new Date();

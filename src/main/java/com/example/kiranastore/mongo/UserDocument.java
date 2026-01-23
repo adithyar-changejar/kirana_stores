@@ -10,6 +10,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
+/**
+ * The type User document.
+ */
 @Getter
 @Setter
 @Document(collection = "users")

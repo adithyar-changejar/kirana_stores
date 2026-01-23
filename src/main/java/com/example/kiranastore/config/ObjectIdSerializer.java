@@ -7,8 +7,14 @@ import org.bson.types.ObjectId;
 
 import java.io.IOException;
 
+/**
+ * The type Object id serializer.
+ */
 public class ObjectIdSerializer extends StdSerializer<ObjectId> {
 
+    /**
+     * Instantiates a new Object id serializer.
+     */
     public ObjectIdSerializer() {
         super(ObjectId.class);
     }

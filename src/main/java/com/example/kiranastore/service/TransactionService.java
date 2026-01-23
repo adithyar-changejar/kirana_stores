@@ -16,6 +16,9 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+/**
+ * The type Transaction service.
+ */
 @Slf4j
 @Service
 public class TransactionService {
@@ -26,6 +29,15 @@ public class TransactionService {
     private final TransactionMapper transactionMapper;
     private final CurrencyConversionService currencyConversionService;
 
+    /**
+     * Instantiates a new Transaction service.
+     *
+     * @param transactionDao            the transaction dao
+     * @param userRepository            the user repository
+     * @param accountService            the account service
+     * @param transactionMapper         the transaction mapper
+     * @param currencyConversionService the currency conversion service
+     */
     public TransactionService(
             TransactionDao transactionDao,
             UserRepository userRepository,
@@ -43,6 +55,10 @@ public class TransactionService {
     /**
      * USER-INITIATED TRANSACTION
      * (wallet top-up / manual credit or debit)
+     *
+     * @param userId  the user id
+     * @param request the request
+     * @return the transaction response dto
      */
     @Transactional
     public TransactionResponseDTO createTransaction(
@@ -106,6 +122,10 @@ public class TransactionService {
      * CHECKOUT TRANSACTION
      * (system-driven cart payment)
      * ALWAYS: INR + DEBIT
+     *
+     * @param userId the user id
+     * @param amount the amount
+     * @return the transaction response dto
      */
     @Transactional
     public TransactionResponseDTO createCheckoutTransaction(
@@ -148,6 +168,9 @@ public class TransactionService {
 
     /**
      * FETCH TRANSACTION DETAILS
+     *
+     * @param id the id
+     * @return the transaction
      */
     public TransactionDetailsResponseDTO getTransaction(UUID id) {
 

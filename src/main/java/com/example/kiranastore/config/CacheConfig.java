@@ -14,10 +14,19 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
 
+/**
+ * The type Cache config.
+ */
 @Configuration
 @EnableCaching
 public class CacheConfig {
 
+    /**
+     * Cache manager cache manager.
+     *
+     * @param factory the factory
+     * @return the cache manager
+     */
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory factory) {
 
