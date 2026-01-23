@@ -38,6 +38,7 @@ spring:
   redis:
     host: localhost
     port: 6379
+    timeout: 2000
 
   # ---------- Kafka ----------
   kafka:
@@ -56,38 +57,32 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
 # =========================
-# LOGGING  (SECURITY DEBUG ENABLED)
+# LOGGING (SECURITY + KAFKA VISIBLE)
 # =========================
 logging:
   level:
     root: INFO
 
-    # application logs
+    # Application logs
     com.example.kiranastore: INFO
 
-    # 🔥 IMPORTANT: enable Spring Security decision logs
+    # 🔥 Spring Security decision tracing
     org.springframework.security: DEBUG
 
-    # reduce framework noise
+    # Kafka lifecycle visibility
+    org.springframework.kafka: INFO
+
+    # Reduce framework noise
     org.springframework.web: WARN
     org.springframework.boot.autoconfigure.security: WARN
-
-    # Spring Data noise
     org.springframework.data.repository.config: WARN
     org.springframework.data.jpa.repository.query: WARN
-
-    # Persistence noise
     org.hibernate: WARN
     org.springframework.orm.jpa: WARN
     org.mongodb.driver: WARN
-
-    # Server noise
     org.apache.catalina: WARN
     org.apache.coyote: WARN
-
-    # Kafka
     org.apache.kafka: WARN
-    org.springframework.kafka: INFO
 
 # =========================
 # ACTUATOR / PROMETHEUS

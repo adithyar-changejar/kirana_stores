@@ -9,7 +9,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 /**
- * The type Report request consumer.
+ * Report request consumer (Kafka → async processing)
  */
 @Slf4j
 @Component
@@ -19,9 +19,7 @@ public class ReportRequestConsumer {
     private final ReportLifecycleService lifecycleService;
 
     /**
-     * Consume.
-     *
-     * @param event the event
+     * Consume report request command
      */
     @KafkaListener(
             topics = "report_requests",
@@ -29,11 +27,19 @@ public class ReportRequestConsumer {
     )
     public void consume(ReportRequestEvent event) {
 
-
-        MDC.put("requestId", event.getTraceId());
+        // Restore traceId for logs
+        if (event.getTraceId() != null) {
+            MDC.put("requestId", event.getTraceId());
+        }
 
         try {
-            log.info("Kafka consumer processing report request");
+            log.info(
+                    " Kafka consumer RECEIVED | reportId={} userId={} from={} to={}",
+                    event.getReportId(),
+                    event.getUserId(),
+                    event.getFromTime(),
+                    event.getToTime()
+            );
 
             lifecycleService.generateReport(
                     event.getReportId(),
@@ -42,8 +48,18 @@ public class ReportRequestConsumer {
                     event.getToTime()
             );
 
-            log.info("Kafka consumer completed report generation");
+            log.info(
+                    " Kafka consumer COMPLETED report generation | reportId={}",
+                    event.getReportId()
+            );
 
+        } catch (Exception e) {
+            log.error(
+                    " Kafka consumer FAILED | reportId={}",
+                    event.getReportId(),
+                    e
+            );
+            throw e;
         } finally {
             MDC.clear();
         }
