@@ -40,17 +40,17 @@ public class ReportRequestProducer {
             record.headers().add("traceId", event.getTraceId().getBytes());
         }
 
-        log.info("📤 Sending report request to Kafka | reportId={} userId={}",
+        log.info(" Sending report request to Kafka | reportId={} userId={}",
                 event.getReportId(), event.getUserId());
 
         // ASYNC send with callback (IMPORTANT FOR LOGS)
         kafkaTemplate.send(record)
                 .whenComplete((result, ex) -> {
                     if (ex != null) {
-                        log.error("❌ Kafka producer FAILED | reportId={}", event.getReportId(), ex);
+                        log.error(" Kafka producer FAILED | reportId={}", event.getReportId(), ex);
                     } else {
                         log.info(
-                                "✅ Kafka producer SENT | topic={} partition={} offset={} reportId={}",
+                                " Kafka producer SENT | topic={} partition={} offset={} reportId={}",
                                 result.getRecordMetadata().topic(),
                                 result.getRecordMetadata().partition(),
                                 result.getRecordMetadata().offset(),
