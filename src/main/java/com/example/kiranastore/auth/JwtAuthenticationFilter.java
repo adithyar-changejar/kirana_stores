@@ -60,7 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 System.out.println("Authorities = " + authentication.getAuthorities());
 
             } catch (Exception e) {
-                System.out.println("JWT ERROR ❌");
+                System.out.println("JWT ERROR ");
                 e.printStackTrace();
             }
         } else {

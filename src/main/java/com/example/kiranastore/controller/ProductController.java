@@ -19,7 +19,7 @@ public class ProductController {
     private final ProductService productService;
 
 
-    // ✅ PUBLIC: list products
+    //  PUBLIC: list products
     @GetMapping("/stores/{storeId}/products")
     public List<ProductDocument> getProducts(@PathVariable String storeId) {
         return productService.getProducts(new ObjectId(storeId));

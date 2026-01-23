@@ -16,7 +16,6 @@ public class CartDocument {
 
     private String userId;
 
-    // ✅ STORE AS STRING (hex)
     private String storeId;
 
     private CartStatus status;

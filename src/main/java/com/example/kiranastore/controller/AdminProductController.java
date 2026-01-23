@@ -25,7 +25,7 @@ public class AdminProductController {
         System.out.println("---- CONTROLLER HIT ----");
 
         if (auth == null) {
-            System.out.println("AUTH IS NULL ❌");
+            System.out.println("AUTH IS NULL ");
         } else {
             System.out.println("AUTH CLASS = " + auth.getClass());
             System.out.println("AUTH NAME = " + auth.getName());

@@ -16,7 +16,7 @@ public class JacksonConfig {
 
         mapper.registerModule(new JavaTimeModule());
 
-        // ✅ FIX: Proper ObjectId serialization
+        // ObjectId serialization
         SimpleModule objectIdModule = new SimpleModule();
         objectIdModule.addSerializer(
                 ObjectId.class,

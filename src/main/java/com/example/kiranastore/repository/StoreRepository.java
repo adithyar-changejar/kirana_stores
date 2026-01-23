@@ -11,6 +11,6 @@ public interface StoreRepository extends MongoRepository<StoreDocument, ObjectId
 
     List<StoreDocument> findByStatus(String status);
 
-    // ✅ NEW: verify admin owns store
+    // verify admin owns store
     Optional<StoreDocument> findByIdAndAdminId(ObjectId id, String adminId);
 }

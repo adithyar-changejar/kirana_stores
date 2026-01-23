@@ -16,7 +16,7 @@ public class RateLimitService {
         this.redisTemplate = redisTemplate;
     }
 
-    // ✅ Order matters (top → bottom)
+    // Order matters (top → bottom)
     private static final Map<String, RateLimitRule> RULES = new LinkedHashMap<>();
 
     static {

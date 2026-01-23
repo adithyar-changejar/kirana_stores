@@ -67,7 +67,7 @@ public class TransactionService {
         CurrencyType currency = request.getCurrency();
         TransactionType type = request.getType();
 
-        // 🌍 USD → INR conversion
+        //  USD → INR conversion
         if (currency == CurrencyType.USD) {
             amount = amount.multiply(
                     currencyConversionService.getUsdToInrRate()
@@ -75,17 +75,17 @@ public class TransactionService {
             currency = CurrencyType.INR;
         }
 
-        // 🏦 account
+        //  account
         var account = accountService.getOrCreateAccount(userId);
 
-        // 💰 apply transaction
+        //  apply transaction
         accountService.applyTransaction(
                 account,
                 amount,
                 type
         );
 
-        // 🧾 persist
+        //  persist
         TransactionEntity entity =
                 transactionMapper.toEntity(
                         amount,
@@ -119,17 +119,17 @@ public class TransactionService {
                 amount
         );
 
-        // 🏦 account
+        //  account
         var account = accountService.getOrCreateAccount(userId);
 
-        // 💰 debit wallet
+        //  debit wallet
         accountService.applyTransaction(
                 account,
                 amount,
                 TransactionType.DEBIT
         );
 
-        // 🧾 persist transaction
+        //  persist transaction
         TransactionEntity entity =
                 transactionMapper.toEntity(
                         amount,

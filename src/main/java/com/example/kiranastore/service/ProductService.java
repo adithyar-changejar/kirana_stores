@@ -30,7 +30,7 @@ public class ProductService {
 
         ObjectId storeObjectId = new ObjectId(storeId);
 
-        // 🔒 verify store belongs to admin
+        //  verify store belongs to admin
         StoreDocument store = storeRepository
                 .findByIdAndAdminId(storeObjectId, adminId)
                 .orElseThrow(() ->
