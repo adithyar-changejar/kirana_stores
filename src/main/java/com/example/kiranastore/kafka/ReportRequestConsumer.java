@@ -20,6 +20,8 @@ public class ReportRequestConsumer {
 
     /**
      * Consume report request command
+     *
+     * @param event the event
      */
     @KafkaListener(
             topics = "report_requests",
