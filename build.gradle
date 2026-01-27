@@ -67,6 +67,24 @@ dependencies {
 
     // Tests
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // Spring Boot test (includes JUnit 5)
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // Mockito (JUnit 5 support)
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.mockito:mockito-junit-jupiter'
+
+    // Spring Boot test (JUnit 5)
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // Mockito + JUnit 5
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.mockito:mockito-junit-jupiter'
+
+    //  REQUIRED FOR GRADLE 9.x
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
 }
 
 tasks.named('test') {
