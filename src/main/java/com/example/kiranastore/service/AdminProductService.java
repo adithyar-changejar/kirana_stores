@@ -1,5 +1,6 @@
 package com.example.kiranastore.service;
 
+import com.example.kiranastore.dto.CreateProductRequestDTO;
 import com.example.kiranastore.entity.ProductStatus;
 import com.example.kiranastore.mongo.ProductDocument;
 import com.example.kiranastore.mongo.StoreDocument;
@@ -9,53 +10,45 @@ import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-
-/**
- * The type Admin product service.
- */
 @Service
 @RequiredArgsConstructor
 public class AdminProductService {
 
     private final StoreRepository storeRepository;
     private final ProductRepository productRepository;
+    private final InventoryService inventoryService;
 
-    /**
-     * Add product product document.
-     *
-     * @param adminId  the admin id
-     * @param storeId  the store id
-     * @param name     the name
-     * @param price    the price
-     * @param currency the currency
-     * @return the product document
-     */
     public ProductDocument addProduct(
             String adminId,
             String storeId,
-            String name,
-            BigDecimal price,
-            String currency
+            CreateProductRequestDTO request
     ) {
 
-        ObjectId storeObjectId = new ObjectId(storeId);
-
-        StoreDocument store = storeRepository.findById(storeObjectId)
+        StoreDocument store = storeRepository.findById(new ObjectId(storeId))
                 .orElseThrow(() -> new IllegalArgumentException("Store not found"));
 
         if (!store.getAdminId().equals(adminId)) {
             throw new SecurityException("You do not own this store");
         }
 
+        // 1️Save product in MongoDB
         ProductDocument product = ProductDocument.builder()
-                .storeId(storeObjectId)
-                .name(name)
-                .price(price)
-                .currency(currency)
+                .storeId(new ObjectId(storeId))
+                .name(request.getName())
+                .price(request.getPrice())
+                .currency(request.getCurrency())
                 .status(ProductStatus.ACTIVE)
                 .build();
 
-        return productRepository.save(product);
+        ProductDocument savedProduct = productRepository.save(product);
+
+        // 2️Create inventory in PostgreSQL
+        inventoryService.createInventory(
+                storeId,
+                savedProduct.getId().toHexString(),
+                request.getInitialQuantity()
+        );
+
+        return savedProduct;
     }
 }

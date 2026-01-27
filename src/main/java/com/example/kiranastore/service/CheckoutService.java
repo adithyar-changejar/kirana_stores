@@ -21,6 +21,7 @@ public class CheckoutService {
     private final CartRepository cartRepository;
     private final TransactionService transactionService;
     private final OrderService orderService;
+    private final InventoryService inventoryService;
 
     /**
      * Checkout flow:
@@ -37,40 +38,39 @@ public class CheckoutService {
     @Transactional
     public CheckoutResponseDTO checkout(String userId) {
 
-        // 1️ Fetch active cart
         CartDocument cart = cartRepository
                 .findByUserIdAndStatus(userId, CartStatus.ACTIVE)
                 .orElseThrow(() ->
                         new IllegalStateException("No active cart found"));
 
-        // 2️ Validate cart
-        if (cart.getItems() == null || cart.getItems().isEmpty()) {
+        if (cart.getItems().isEmpty()) {
             throw new IllegalStateException("Cart is empty");
         }
 
-        // 3️ Calculate total (trusted price snapshot)
-        BigDecimal total = cart.getItems().stream()
-                .map(item ->
-                        item.getPriceSnapshot()
-                                .multiply(BigDecimal.valueOf(item.getQuantity()))
+        //  INVENTORY CHECK + DEDUCTION
+        cart.getItems().forEach(item ->
+                inventoryService.deductStock(
+                        cart.getStoreId(),
+                        item.getProductId(),
+                        item.getQuantity()
                 )
+        );
+
+        BigDecimal total = cart.getItems().stream()
+                .map(i -> i.getPriceSnapshot()
+                        .multiply(BigDecimal.valueOf(i.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // 4️ Wallet debit (throws if insufficient balance)
         transactionService.createCheckoutTransaction(userId, total);
 
-        // 5️ Create ORDER (immutable snapshot)
-        OrderDocument order = orderService.createOrder(cart, total);
-
-        // 6️Close cart
         cart.setStatus(CartStatus.CHECKED_OUT);
         cartRepository.save(cart);
 
-        // ⃣ Return response with ORDER ID
         return new CheckoutResponseDTO(
-                order.getId(),
+                cart.getId(),
                 "SUCCESS",
-                "Order placed successfully"
+                "Checkout completed successfully"
         );
     }
+
 }

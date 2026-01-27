@@ -8,9 +8,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * The type Admin product controller.
- */
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/admin/stores/{storeId}/products")
 @RequiredArgsConstructor
@@ -18,38 +17,21 @@ public class AdminProductController {
 
     private final AdminProductService adminProductService;
 
-    /**
-     * Add product product document.
-     *
-     * @param storeId the store id
-     * @param request the request
-     * @param auth    the auth
-     * @return the product document
-     */
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ProductDocument addProduct(
             @PathVariable String storeId,
-            @RequestBody CreateProductRequestDTO request,
+            @RequestBody @Valid CreateProductRequestDTO request,
             Authentication auth
     ) {
         System.out.println("---- CONTROLLER HIT ----");
-
-        if (auth == null) {
-            System.out.println("AUTH IS NULL ");
-        } else {
-            System.out.println("AUTH CLASS = " + auth.getClass());
-            System.out.println("AUTH NAME = " + auth.getName());
-            System.out.println("AUTHORITIES = " + auth.getAuthorities());
-        }
+        System.out.println("ADMIN ID = " + auth.getName());
+        System.out.println("AUTHORITIES = " + auth.getAuthorities());
 
         return adminProductService.addProduct(
-                auth.getName(),
+                auth.getName(),   // adminId
                 storeId,
-                request.getName(),
-                request.getPrice(),
-                request.getCurrency()
+                request           // ✅ pass whole DTO
         );
     }
-
 }

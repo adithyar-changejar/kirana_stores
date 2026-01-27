@@ -14,6 +14,7 @@ import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.UUID;
 
 /**
@@ -29,15 +30,6 @@ public class TransactionService {
     private final TransactionMapper transactionMapper;
     private final CurrencyConversionService currencyConversionService;
 
-    /**
-     * Instantiates a new Transaction service.
-     *
-     * @param transactionDao            the transaction dao
-     * @param userRepository            the user repository
-     * @param accountService            the account service
-     * @param transactionMapper         the transaction mapper
-     * @param currencyConversionService the currency conversion service
-     */
     public TransactionService(
             TransactionDao transactionDao,
             UserRepository userRepository,
@@ -54,11 +46,9 @@ public class TransactionService {
 
     /**
      * USER-INITIATED TRANSACTION
-     * (wallet top-up / manual credit or debit)
-     *
-     * @param userId  the user id
-     * @param request the request
-     * @return the transaction response dto
+     * Wallet top-up / manual credit or debit
+     * INPUT: USD or INR
+     * STORAGE: INR ONLY
      */
     @Transactional
     public TransactionResponseDTO createTransaction(
@@ -74,39 +64,37 @@ public class TransactionService {
                 request.getType()
         );
 
-        // 🔒 ensure user exists
+        // 1️⃣ ensure user exists
         userRepository.findById(new ObjectId(userId))
                 .orElseThrow(() ->
                         new IllegalArgumentException("User does not exist"));
 
-        BigDecimal amount = request.getAmount();
-        CurrencyType currency = request.getCurrency();
-        TransactionType type = request.getType();
+        // 2️⃣ normalize amount to INR
+        BigDecimal amountInInr = request.getAmount();
 
-        //  USD → INR conversion
-        if (currency == CurrencyType.USD) {
-            amount = amount.multiply(
+        if (request.getCurrency() == CurrencyType.USD) {
+            amountInInr = amountInInr.multiply(
                     currencyConversionService.getUsdToInrRate()
             );
-            currency = CurrencyType.INR;
         }
 
-        //  account
+        amountInInr = amountInInr.setScale(2, RoundingMode.HALF_UP);
+
+        // 3️⃣ wallet is INR-only
         var account = accountService.getOrCreateAccount(userId);
 
-        //  apply transaction
         accountService.applyTransaction(
                 account,
-                amount,
-                type
+                amountInInr,
+                request.getType()
         );
 
-        //  persist
+        // 4️⃣ persist transaction (INR only)
         TransactionEntity entity =
                 transactionMapper.toEntity(
-                        amount,
-                        currency,
-                        type,
+                        amountInInr,
+                        CurrencyType.INR,
+                        request.getType(),
                         userId
                 );
 
@@ -120,12 +108,8 @@ public class TransactionService {
 
     /**
      * CHECKOUT TRANSACTION
-     * (system-driven cart payment)
+     * System-driven cart payment
      * ALWAYS: INR + DEBIT
-     *
-     * @param userId the user id
-     * @param amount the amount
-     * @return the transaction response dto
      */
     @Transactional
     public TransactionResponseDTO createCheckoutTransaction(
@@ -139,17 +123,14 @@ public class TransactionService {
                 amount
         );
 
-        //  account
         var account = accountService.getOrCreateAccount(userId);
 
-        //  debit wallet
         accountService.applyTransaction(
                 account,
                 amount,
                 TransactionType.DEBIT
         );
 
-        //  persist transaction
         TransactionEntity entity =
                 transactionMapper.toEntity(
                         amount,
@@ -168,9 +149,6 @@ public class TransactionService {
 
     /**
      * FETCH TRANSACTION DETAILS
-     *
-     * @param id the id
-     * @return the transaction
      */
     public TransactionDetailsResponseDTO getTransaction(UUID id) {
 

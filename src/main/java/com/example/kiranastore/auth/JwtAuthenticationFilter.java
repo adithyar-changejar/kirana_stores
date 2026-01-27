@@ -12,18 +12,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * The type Jwt authentication filter.
- */
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    /**
-     * Instantiates a new Jwt authentication filter.
-     *
-     * @param jwtTokenProvider the jwt token provider
-     */
     public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
     }
@@ -43,40 +35,37 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
-            System.out.println("Token extracted");
 
             try {
-                boolean valid = jwtTokenProvider.validateToken(token);
-                System.out.println("Token valid = " + valid);
+                jwtTokenProvider.validateToken(token);
 
                 String userId = jwtTokenProvider.getUserId(token);
-                String role = jwtTokenProvider.getRole(token);
+                String role = jwtTokenProvider.getRole(token); // ADMIN / USER
 
-                System.out.println("JWT userId = " + userId);
-                System.out.println("JWT role = " + role);
+                // 🔥 IMPORTANT FIX
+                SimpleGrantedAuthority authority =
+                        new SimpleGrantedAuthority("ROLE_" + role);
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 userId,
                                 null,
-                                List.of(new SimpleGrantedAuthority("ROLE_" + role))
+                                List.of(authority)
                         );
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                System.out.println("Authentication set in SecurityContext");
+                System.out.println("JWT userId = " + userId);
+                System.out.println("JWT role = ROLE_" + role);
                 System.out.println("Authorities = " + authentication.getAuthorities());
 
             } catch (Exception e) {
-                System.out.println("JWT ERROR ");
+                System.out.println("JWT ERROR");
                 e.printStackTrace();
             }
-        } else {
-            System.out.println("No Bearer token");
         }
 
         filterChain.doFilter(request, response);
-
         System.out.println("---- JWT FILTER END ----");
     }
 }
