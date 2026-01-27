@@ -64,12 +64,12 @@ public class TransactionService {
                 request.getType()
         );
 
-        // 1️⃣ ensure user exists
+        // ensure user exists
         userRepository.findById(new ObjectId(userId))
                 .orElseThrow(() ->
                         new IllegalArgumentException("User does not exist"));
 
-        // 2️⃣ normalize amount to INR
+        //  normalize amount to INR
         BigDecimal amountInInr = request.getAmount();
 
         if (request.getCurrency() == CurrencyType.USD) {
@@ -80,7 +80,7 @@ public class TransactionService {
 
         amountInInr = amountInInr.setScale(2, RoundingMode.HALF_UP);
 
-        // 3️⃣ wallet is INR-only
+        // wallet is INR-only
         var account = accountService.getOrCreateAccount(userId);
 
         accountService.applyTransaction(
@@ -89,7 +89,7 @@ public class TransactionService {
                 request.getType()
         );
 
-        // 4️⃣ persist transaction (INR only)
+        // persist transaction (INR only)
         TransactionEntity entity =
                 transactionMapper.toEntity(
                         amountInInr,
