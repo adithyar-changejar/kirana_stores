@@ -66,7 +66,7 @@ logging:
     # Application logs
     com.example.kiranastore: INFO
 
-    # 🔥 Spring Security decision tracing
+    #  Spring Security decision tracing
     org.springframework.security: DEBUG
 
     # Kafka lifecycle visibility
